@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Molarity calculator icon">
+  <rect width="128" height="128" rx="28" fill="#0f766e"/>
+  <path d="M29 88h70" stroke="#d9f99d" stroke-width="9" stroke-linecap="round"/>
+  <path d="M42 40v39c0 12 9 21 22 21s22-9 22-21V40" fill="none" stroke="#ffffff" stroke-width="9" stroke-linecap="round"/>
+  <path d="M42 56h44" stroke="#99f6e4" stroke-width="7" stroke-linecap="round"/>
+  <circle cx="55" cy="75" r="5" fill="#d9f99d"/>
+  <circle cx="73" cy="83" r="4" fill="#99f6e4"/>
+  <path d="M50 29h28" stroke="#ffffff" stroke-width="9" stroke-linecap="round"/>
+</svg>
