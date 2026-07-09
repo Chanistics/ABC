@@ -37,74 +37,6 @@ const residueMass = {
   },
 };
 
-const massFactors = {
-  g: 1,
-  mg: 1e-3,
-  ug: 1e-6,
-  ng: 1e-9,
-  pg: 1e-12,
-};
-
-const volumeFactors = {
-  L: 1,
-  mL: 1e-3,
-  uL: 1e-6,
-  nL: 1e-9,
-};
-
-const concentrationFactors = {
-  M: 1,
-  mM: 1e-3,
-  uM: 1e-6,
-  nM: 1e-9,
-  pM: 1e-12,
-};
-
-const bufferConcentrationFactors = {
-  M: 1,
-  mM: 1e-3,
-  uM: 1e-6,
-  nM: 1e-9,
-  X: 1,
-};
-
-const unitLabels = {
-  mass: {
-    g: "g",
-    mg: "mg",
-    ug: "ug",
-    ng: "ng",
-    pg: "pg",
-  },
-  volume: {
-    L: "L",
-    mL: "mL",
-    uL: "uL",
-    nL: "nL",
-  },
-  concentration: {
-    M: "M",
-    mM: "mM",
-    uM: "uM",
-    nM: "nM",
-    pM: "pM",
-  },
-};
-
-const proteinConcentrationFactors = {
-  mgmL: 1,
-  ugmL: 1e-3,
-  ngUl: 1e-3,
-};
-
-const proteinMolarityFactors = {
-  uM: 1e-6,
-  nM: 1e-9,
-  pM: 1e-12,
-};
-
-const CUSTOM_BUFFER_STORAGE_KEY = "molarityLabBufferRecipePresetsV3";
-
 const codonTable = {
   UUU: "F",
   UUC: "F",
@@ -172,21 +104,49 @@ const codonTable = {
   GGG: "G",
 };
 
+const volumeFactors = {
+  L: 1,
+  mL: 1e-3,
+  uL: 1e-6,
+  nL: 1e-9,
+};
+
+const massFactors = {
+  g: 1,
+  mg: 1e-3,
+  ug: 1e-6,
+  ng: 1e-9,
+  pg: 1e-12,
+};
+
+const concentrationFactors = {
+  M: 1,
+  mM: 1e-3,
+  uM: 1e-6,
+  nM: 1e-9,
+  pM: 1e-12,
+};
+
+const unitLabels = {
+  mass: { g: "g", mg: "mg", ug: "ug", ng: "ng", pg: "pg" },
+  volume: { L: "L", mL: "mL", uL: "uL", nL: "nL" },
+  concentration: { M: "M", mM: "mM", uM: "uM", nM: "nM", pM: "pM" },
+};
+
+const bufferConcentrationFactors = {
+  M: 1,
+  mM: 1e-3,
+  uM: 1e-6,
+  X: 1,
+};
+
+const CUSTOM_BUFFER_STORAGE_KEY = "abcV2BufferRecipePresets";
+
 const el = {
   toolTabs: [...document.querySelectorAll("[data-tool-tab]")],
   toolPanels: [...document.querySelectorAll("[data-tool-panel]")],
-  segments: [...document.querySelectorAll("[data-molecule]")],
-  dogmaModeButtons: [...document.querySelectorAll("[data-dogma-mode]")],
-  dogmaInput: document.querySelector("#dogmaInput"),
-  dogmaOutput: document.querySelector("#dogmaOutput"),
-  dogmaInputLengthOutput: document.querySelector("#dogmaInputLengthOutput strong"),
-  dogmaGcOutput: document.querySelector("#dogmaGcOutput strong"),
-  dogmaOutputLengthOutput: document.querySelector("#dogmaOutputLengthOutput strong"),
-  dogmaOutputUnit: document.querySelector("#dogmaOutputUnit"),
-  dogmaFrameOutput: document.querySelector("#dogmaFrameOutput strong"),
-  dogmaNote: document.querySelector("#dogmaNote"),
-  copyDogmaOutputButton: document.querySelector("#copyDogmaOutputButton"),
-  clearDogmaButton: document.querySelector("#clearDogmaButton"),
+  moleculeButtons: [...document.querySelectorAll("[data-molecule]")],
+  proteinSearchPanel: document.querySelector("#proteinSearchPanel"),
   proteinSearchInput: document.querySelector("#proteinSearchInput"),
   organismSearchInput: document.querySelector("#organismSearchInput"),
   proteinSearchButton: document.querySelector("#proteinSearchButton"),
@@ -199,7 +159,8 @@ const el = {
   gcOutput: document.querySelector("#gcOutput strong"),
   sequenceNote: document.querySelector("#sequenceNote"),
   clearSequenceButton: document.querySelector("#clearSequenceButton"),
-  solveFor: document.querySelector("#solveFor"),
+  useMwButton: document.querySelector("#useMwButton"),
+  solveButtons: [...document.querySelectorAll("[data-solve-for]")],
   massInput: document.querySelector("#massInput"),
   massUnit: document.querySelector("#massUnit"),
   mwInput: document.querySelector("#mwInput"),
@@ -208,71 +169,183 @@ const el = {
   concentrationInput: document.querySelector("#concentrationInput"),
   concentrationUnit: document.querySelector("#concentrationUnit"),
   molarityAnswer: document.querySelector("#molarityAnswer"),
-  ngUlInput: document.querySelector("#ngUlInput"),
-  conversionMwInput: document.querySelector("#conversionMwInput"),
-  presetLengthInput: document.querySelector("#presetLengthInput"),
-  presetButtons: [...document.querySelectorAll("[data-preset]")],
-  nucleicNgUlOutput: document.querySelector("#nucleicNgUlOutput strong"),
-  nMOutput: document.querySelector("#nMOutput strong"),
-  uMOutput: document.querySelector("#uMOutput strong"),
-  nucleicPmolOutput: document.querySelector("#nucleicPmolOutput strong"),
-  nucleicTargetVolumeInput: document.querySelector("#nucleicTargetVolumeInput"),
-  nucleicTargetVolumeUnit: document.querySelector("#nucleicTargetVolumeUnit"),
-  nucleicAnswer: document.querySelector("#nucleicAnswer"),
+  concentrationModeButtons: [...document.querySelectorAll("[data-concentration-mode]")],
+  concentrationPanels: [...document.querySelectorAll("[data-concentration-panel]")],
+  rnaConcInput: document.querySelector("#rnaConcInput"),
+  rnaConcUnit: document.querySelector("#rnaConcUnit"),
+  rnaMwInput: document.querySelector("#rnaMwInput"),
+  rnaVolumeInput: document.querySelector("#rnaVolumeInput"),
+  rnaVolumeUnit: document.querySelector("#rnaVolumeUnit"),
+  rnaLengthInput: document.querySelector("#rnaLengthInput"),
+  rnaPresetButtons: [...document.querySelectorAll("[data-rna-preset]")],
+  rnaConversionAnswer: document.querySelector("#rnaConversionAnswer"),
+  rnaNgUlOutput: document.querySelector("#rnaNgUlOutput strong"),
+  rnaUMOutput: document.querySelector("#rnaUMOutput strong"),
+  rnaPmolOutput: document.querySelector("#rnaPmolOutput strong"),
   proteinConcInput: document.querySelector("#proteinConcInput"),
   proteinConcUnit: document.querySelector("#proteinConcUnit"),
   proteinMwInput: document.querySelector("#proteinMwInput"),
+  proteinConversionAnswer: document.querySelector("#proteinConversionAnswer"),
   proteinMgMlOutput: document.querySelector("#proteinMgMlOutput strong"),
-  proteinNgUlOutput: document.querySelector("#proteinNgUlOutput strong"),
   proteinUMOutput: document.querySelector("#proteinUMOutput strong"),
-  proteinPMOutput: document.querySelector("#proteinPMOutput strong"),
-  proteinPmolOutput: document.querySelector("#proteinPmolOutput strong"),
-  proteinTargetVolumeInput: document.querySelector("#proteinTargetVolumeInput"),
-  proteinTargetVolumeUnit: document.querySelector("#proteinTargetVolumeUnit"),
-  proteinMassAnswer: document.querySelector("#proteinMassAnswer"),
-  dilutionFinalVolumeInput: document.querySelector("#dilutionFinalVolumeInput"),
-  dilutionVolumeUnit: document.querySelector("#dilutionVolumeUnit"),
-  dilutionMaterialInput: document.querySelector("#dilutionMaterialInput"),
-  dilutionRatioInput: document.querySelector("#dilutionRatioInput"),
-  addDilutionMaterialButton: document.querySelector("#addDilutionMaterialButton"),
-  clearDilutionMaterialsButton: document.querySelector("#clearDilutionMaterialsButton"),
-  dilutionTotalMaterialOutput: document.querySelector("#dilutionTotalMaterialOutput strong"),
-  dilutionDiluentOutput: document.querySelector("#dilutionDiluentOutput strong"),
-  dilutionTableBody: document.querySelector("#dilutionTableBody"),
-  dilutionSummary: document.querySelector("#dilutionSummary"),
-  dilutionNote: document.querySelector("#dilutionNote"),
+  dilutionModeButtons: [...document.querySelectorAll("[data-dilution-mode]")],
+  dilutionPanels: [...document.querySelectorAll("[data-dilution-panel]")],
+  foldStockInput: document.querySelector("#foldStockInput"),
+  foldTargetInput: document.querySelector("#foldTargetInput"),
+  foldFinalVolumeInput: document.querySelector("#foldFinalVolumeInput"),
+  foldVolumeUnit: document.querySelector("#foldVolumeUnit"),
+  foldDilutionAnswer: document.querySelector("#foldDilutionAnswer"),
+  molarStockInput: document.querySelector("#molarStockInput"),
+  molarStockUnit: document.querySelector("#molarStockUnit"),
+  molarTargetInput: document.querySelector("#molarTargetInput"),
+  molarTargetUnit: document.querySelector("#molarTargetUnit"),
+  molarFinalVolumeInput: document.querySelector("#molarFinalVolumeInput"),
+  molarVolumeUnit: document.querySelector("#molarVolumeUnit"),
+  molarDilutionAnswer: document.querySelector("#molarDilutionAnswer"),
+  rnaStockInput: document.querySelector("#rnaStockInput"),
+  rnaStockUnit: document.querySelector("#rnaStockUnit"),
+  rnaTargetInput: document.querySelector("#rnaTargetInput"),
+  rnaTargetUnit: document.querySelector("#rnaTargetUnit"),
+  rnaDilutionMwInput: document.querySelector("#rnaDilutionMwInput"),
+  rnaDilutionVolumeInput: document.querySelector("#rnaDilutionVolumeInput"),
+  rnaDilutionVolumeUnit: document.querySelector("#rnaDilutionVolumeUnit"),
+  rnaDilutionAnswer: document.querySelector("#rnaDilutionAnswer"),
+  proteinStockInput: document.querySelector("#proteinStockInput"),
+  proteinStockUnit: document.querySelector("#proteinStockUnit"),
+  proteinTargetInput: document.querySelector("#proteinTargetInput"),
+  proteinTargetUnit: document.querySelector("#proteinTargetUnit"),
+  proteinDilutionMwInput: document.querySelector("#proteinDilutionMwInput"),
+  proteinDilutionVolumeInput: document.querySelector("#proteinDilutionVolumeInput"),
+  proteinDilutionVolumeUnit: document.querySelector("#proteinDilutionVolumeUnit"),
+  proteinDilutionAnswer: document.querySelector("#proteinDilutionAnswer"),
+  bufferModeButtons: [...document.querySelectorAll("[data-buffer-mode]")],
+  bufferPanels: [...document.querySelectorAll("[data-buffer-panel]")],
   bufferPresetSelect: document.querySelector("#bufferPresetSelect"),
   bufferPresetNameInput: document.querySelector("#bufferPresetNameInput"),
-  bufferPresetNoteInput: document.querySelector("#bufferPresetNoteInput"),
   bufferTotalVolumeInput: document.querySelector("#bufferTotalVolumeInput"),
   bufferTotalVolumeUnit: document.querySelector("#bufferTotalVolumeUnit"),
   bufferDiluentNameInput: document.querySelector("#bufferDiluentNameInput"),
+  bufferPresetNoteInput: document.querySelector("#bufferPresetNoteInput"),
   bufferComponentNameInput: document.querySelector("#bufferComponentNameInput"),
   bufferComponentTypeSelect: document.querySelector("#bufferComponentTypeSelect"),
-  bufferPowderAmountInput: document.querySelector("#bufferPowderAmountInput"),
-  bufferPowderAmountUnit: document.querySelector("#bufferPowderAmountUnit"),
   bufferStockConcInput: document.querySelector("#bufferStockConcInput"),
   bufferStockConcUnit: document.querySelector("#bufferStockConcUnit"),
   bufferTargetConcInput: document.querySelector("#bufferTargetConcInput"),
   bufferTargetConcUnit: document.querySelector("#bufferTargetConcUnit"),
+  bufferPowderAmountInput: document.querySelector("#bufferPowderAmountInput"),
+  bufferPowderAmountUnit: document.querySelector("#bufferPowderAmountUnit"),
   bufferPowderFields: [...document.querySelectorAll("[data-buffer-powder-field]")],
   bufferSolutionFields: [...document.querySelectorAll("[data-buffer-solution-field]")],
   addBufferComponentButton: document.querySelector("#addBufferComponentButton"),
   saveBufferPresetButton: document.querySelector("#saveBufferPresetButton"),
   deleteBufferPresetButton: document.querySelector("#deleteBufferPresetButton"),
-  bufferComponentTableBody: document.querySelector("#bufferComponentTableBody"),
   bufferTableBody: document.querySelector("#bufferTableBody"),
+  bufferComponentTableBody: document.querySelector("#bufferComponentTableBody"),
   bufferNote: document.querySelector("#bufferNote"),
-  installButton: document.querySelector("#installButton"),
+  dogmaModeButtons: [...document.querySelectorAll("[data-dogma-mode]")],
+  dogmaInput: document.querySelector("#dogmaInput"),
+  dogmaOutput: document.querySelector("#dogmaOutput"),
+  dogmaInputLengthOutput: document.querySelector("#dogmaInputLengthOutput strong"),
+  dogmaGcOutput: document.querySelector("#dogmaGcOutput strong"),
+  dogmaOutputLengthOutput: document.querySelector("#dogmaOutputLengthOutput strong"),
+  dogmaOutputUnit: document.querySelector("#dogmaOutputUnit"),
+  dogmaFrameOutput: document.querySelector("#dogmaFrameOutput strong"),
+  dogmaNote: document.querySelector("#dogmaNote"),
+  copyDogmaOutputButton: document.querySelector("#copyDogmaOutputButton"),
+  clearDogmaButton: document.querySelector("#clearDogmaButton"),
 };
 
 let moleculeType = "protein";
 let currentMw = null;
-let deferredInstallPrompt = null;
+let solveFor = "concentration";
+let dogmaMode = "transcribe";
 let customBufferRecipes = [];
 let currentBufferDraft = null;
-let dogmaMode = "transcribe";
-let dilutionMaterials = [];
+
+function numberValue(input) {
+  const value = Number(input.value);
+  return Number.isFinite(value) && value > 0 ? value : null;
+}
+
+function superscriptExponent(value) {
+  const superscript = {
+    "-": "-",
+    "+": "+",
+    0: "0",
+    1: "1",
+    2: "2",
+    3: "3",
+    4: "4",
+    5: "5",
+    6: "6",
+    7: "7",
+    8: "8",
+    9: "9",
+  };
+  return String(value)
+    .replace(/^\+/, "")
+    .split("")
+    .map((char) => superscript[char] || char)
+    .join("");
+}
+
+function formatNumber(value, maxDigits = 5) {
+  if (!Number.isFinite(value)) return "-";
+  if (value === 0) return "0";
+  const abs = Math.abs(value);
+  if (abs >= 100000 || abs < 0.001) {
+    const [mantissa, exponent] = value.toExponential(3).split("e");
+    const formattedMantissa = new Intl.NumberFormat("en-US", {
+      maximumFractionDigits: 3,
+    }).format(Number(mantissa));
+    return `${formattedMantissa}e${superscriptExponent(Number(exponent))}`;
+  }
+  return new Intl.NumberFormat("en-US", {
+    maximumFractionDigits: maxDigits,
+  }).format(value);
+}
+
+function setMetric(output, value, digits = 5) {
+  output.textContent = value === null ? "-" : formatNumber(value, digits);
+}
+
+function clearChildren(node) {
+  while (node.firstChild) node.removeChild(node.firstChild);
+}
+
+function setTableMessage(tbody, colspan, message) {
+  clearChildren(tbody);
+  const row = document.createElement("tr");
+  const cell = document.createElement("td");
+  cell.colSpan = colspan;
+  cell.textContent = message;
+  row.append(cell);
+  tbody.append(row);
+}
+
+function setActiveButtons(buttons, attr, value) {
+  buttons.forEach((button) => {
+    button.classList.toggle("is-active", button.dataset[attr] === value);
+  });
+}
+
+function switchTool(tool) {
+  setActiveButtons(el.toolTabs, "toolTab", tool);
+  el.toolPanels.forEach((panel) => {
+    const isActive = panel.dataset.toolPanel === tool;
+    panel.classList.toggle("is-active", isActive);
+    panel.hidden = !isActive;
+  });
+}
+
+function switchMode(buttons, panels, buttonAttr, panelAttr, mode) {
+  setActiveButtons(buttons, buttonAttr, mode);
+  panels.forEach((panel) => {
+    const isActive = panel.dataset[panelAttr] === mode;
+    panel.classList.toggle("is-active", isActive);
+    panel.hidden = !isActive;
+  });
+}
 
 function cleanSequence(value, type) {
   const sequence = value.toUpperCase().replace(/[^A-Z]/g, "");
@@ -307,72 +380,49 @@ function gcPercent(sequence) {
   return (gc / sequence.length) * 100;
 }
 
-function numberValue(input) {
-  const value = Number(input.value);
-  return Number.isFinite(value) && value > 0 ? value : null;
-}
+function updateSequence() {
+  const sequence = cleanSequence(el.sequenceInput.value, moleculeType);
+  const result = calculateMw(sequence, moleculeType);
+  currentMw = result.mw;
 
-function superscriptExponent(value) {
-  const superscript = {
-    "-": "⁻",
-    "+": "⁺",
-    0: "⁰",
-    1: "¹",
-    2: "²",
-    3: "³",
-    4: "⁴",
-    5: "⁵",
-    6: "⁶",
-    7: "⁷",
-    8: "⁸",
-    9: "⁹",
-  };
-  return String(value)
-    .replace(/^\+/, "")
-    .split("")
-    .map((char) => superscript[char] || char)
-    .join("");
-}
+  setMetric(el.lengthOutput, result.length, 0);
+  setMetric(el.mwOutput, result.mw, 3);
 
-function formatNumber(value, maxDigits = 5) {
-  if (!Number.isFinite(value)) return "-";
-  if (value === 0) return "0";
-  const abs = Math.abs(value);
-  if (abs >= 100000 || abs < 0.001) {
-    const [mantissa, exponent] = value.toExponential(3).split("e");
-    const formattedMantissa = new Intl.NumberFormat("en-US", {
-      maximumFractionDigits: 3,
-    }).format(Number(mantissa));
-    return `${formattedMantissa} × 10${superscriptExponent(Number(exponent))}`;
+  if (moleculeType === "protein") {
+    el.gcOutput.textContent = "-";
+  } else {
+    setMetric(el.gcOutput, gcPercent(sequence), 1);
   }
-  return new Intl.NumberFormat("en-US", {
-    maximumFractionDigits: maxDigits,
-  }).format(value);
-}
 
-function setMetric(output, value, digits) {
-  output.textContent = value === null ? "-" : formatNumber(value, digits);
-}
-
-function switchTool(tool) {
-  el.toolTabs.forEach((tab) => {
-    const isActive = tab.dataset.toolTab === tool;
-    tab.classList.toggle("active", isActive);
-    tab.setAttribute("aria-selected", String(isActive));
-  });
-
-  el.toolPanels.forEach((panel) => {
-    const isActive = panel.dataset.toolPanel === tool;
-    panel.classList.toggle("active", isActive);
-    panel.hidden = !isActive;
-  });
+  if (result.invalid.length) {
+    el.sequenceNote.innerHTML = `<span class="is-warning">Unsupported characters: ${result.invalid.join(", ")}</span>`;
+  } else if (moleculeType === "protein") {
+    el.sequenceNote.textContent = "Protein uses average residue mass plus H2O.";
+  } else {
+    el.sequenceNote.textContent = "RNA/DNA are calculated as single-stranded oligos. T/U is normalized to the selected type.";
+  }
 }
 
 function setActiveMolecule(type) {
   moleculeType = type;
-  el.segments.forEach((segment) => {
-    segment.classList.toggle("active", segment.dataset.molecule === type);
-  });
+  setActiveButtons(el.moleculeButtons, "molecule", type);
+  el.proteinSearchPanel.hidden = type !== "protein";
+  updateSequence();
+}
+
+function useMwInCalculators() {
+  if (!currentMw) return;
+  const rounded = currentMw.toFixed(3);
+  el.mwInput.value = rounded;
+  el.rnaMwInput.value = rounded;
+  el.rnaDilutionMwInput.value = rounded;
+  el.proteinMwInput.value = rounded;
+  el.proteinDilutionMwInput.value = rounded;
+  updateMolarity();
+  updateRnaConversion();
+  updateProteinConversion();
+  updateRnaDilution();
+  updateProteinDilution();
 }
 
 function getProteinDisplayName(entry) {
@@ -387,18 +437,655 @@ function getGeneName(entry) {
   return entry.genes?.[0]?.geneName?.value || entry.genes?.[0]?.orderedLocusNames?.[0]?.value || "";
 }
 
-function clearChildren(node) {
-  while (node.firstChild) node.removeChild(node.firstChild);
+function applyProteinEntry(entry) {
+  const mw = entry.sequence?.molWeight;
+  if (!Number.isFinite(mw)) return;
+
+  el.sequenceInput.value = "";
+  setActiveMolecule("protein");
+  currentMw = mw;
+  setMetric(el.mwOutput, mw, 3);
+  setMetric(el.lengthOutput, entry.sequence?.length || null, 0);
+  el.gcOutput.textContent = "-";
+  useMwInCalculators();
+
+  const gene = getGeneName(entry);
+  const organism = entry.organism?.scientificName || "unknown organism";
+  el.sequenceNote.textContent = `${getProteinDisplayName(entry)}${gene ? ` (${gene})` : ""}, ${organism}, UniProt ${entry.primaryAccession}`;
 }
 
-function setTableMessage(tbody, colspan, message) {
-  clearChildren(tbody);
+function renderProteinResults(entries) {
+  clearChildren(el.proteinSearchResults);
+
+  if (!entries.length) {
+    el.proteinSearchStatus.textContent = "No result. Try a different protein name or organism.";
+    return;
+  }
+
+  el.proteinSearchStatus.textContent = `${entries.length} results found. Select one to use its MW.`;
+
+  entries.forEach((entry) => {
+    const mw = entry.sequence?.molWeight;
+    if (!Number.isFinite(mw)) return;
+
+    const button = document.createElement("button");
+    const text = document.createElement("span");
+    const title = document.createElement("strong");
+    const meta = document.createElement("small");
+    const mwText = document.createElement("span");
+    const gene = getGeneName(entry);
+
+    button.type = "button";
+    button.className = "search-result";
+    title.textContent = getProteinDisplayName(entry);
+    meta.textContent = [
+      entry.primaryAccession,
+      gene || null,
+      entry.organism?.scientificName || null,
+      entry.sequence?.length ? `${entry.sequence.length} aa` : null,
+    ]
+      .filter(Boolean)
+      .join(" / ");
+    mwText.className = "result-mw";
+    mwText.textContent = `${formatNumber(mw, 3)} g/mol`;
+
+    text.append(title, meta);
+    button.append(text, mwText);
+    button.addEventListener("click", () => applyProteinEntry(entry));
+    el.proteinSearchResults.append(button);
+  });
+}
+
+async function searchProteinByName() {
+  const proteinName = el.proteinSearchInput.value.trim();
+  const organism = el.organismSearchInput.value.trim();
+
+  if (!proteinName) {
+    el.proteinSearchStatus.textContent = "Enter a protein name.";
+    return;
+  }
+
+  clearChildren(el.proteinSearchResults);
+  el.proteinSearchStatus.textContent = "Searching UniProt...";
+  el.proteinSearchButton.disabled = true;
+
+  try {
+    const query = [proteinName, organism].filter(Boolean).join(" ");
+    const params = new URLSearchParams({
+      query,
+      fields: "accession,protein_name,gene_names,organism_name,length,mass",
+      format: "json",
+      size: "8",
+    });
+    const response = await fetch(`https://rest.uniprot.org/uniprotkb/search?${params.toString()}`);
+    if (!response.ok) throw new Error(`UniProt ${response.status}`);
+    const data = await response.json();
+    renderProteinResults(data.results || []);
+  } catch (error) {
+    el.proteinSearchStatus.textContent = "UniProt search failed. Check network access and try again.";
+  } finally {
+    el.proteinSearchButton.disabled = false;
+  }
+}
+
+function toBaseMass() {
+  const mass = numberValue(el.massInput);
+  return mass === null ? null : mass * massFactors[el.massUnit.value];
+}
+
+function toBaseVolume() {
+  const volume = numberValue(el.volumeInput);
+  return volume === null ? null : volume * volumeFactors[el.volumeUnit.value];
+}
+
+function toBaseConcentration() {
+  const concentration = numberValue(el.concentrationInput);
+  return concentration === null ? null : concentration * concentrationFactors[el.concentrationUnit.value];
+}
+
+function updateTargetState() {
+  document.querySelectorAll("[data-solve-field]").forEach((field) => {
+    field.classList.toggle("is-target", field.dataset.solveField === solveFor);
+  });
+}
+
+function updateMolarity() {
+  updateTargetState();
+
+  const mass = toBaseMass();
+  const mw = numberValue(el.mwInput);
+  const volume = toBaseVolume();
+  const concentration = toBaseConcentration();
+  let result = null;
+  let label = "";
+  let detail = "";
+
+  if (solveFor === "concentration" && mass && mw && volume) {
+    result = mass / mw / volume;
+    const display = result / concentrationFactors[el.concentrationUnit.value];
+    label = `${formatNumber(display)} ${unitLabels.concentration[el.concentrationUnit.value]}`;
+    detail = `${formatNumber(mass, 6)} g / ${formatNumber(mw, 3)} g/mol / ${formatNumber(volume, 6)} L`;
+  }
+
+  if (solveFor === "mass" && mw && volume && concentration) {
+    result = concentration * volume * mw;
+    const display = result / massFactors[el.massUnit.value];
+    label = `${formatNumber(display)} ${unitLabels.mass[el.massUnit.value]}`;
+    detail = `${formatNumber(concentration, 6)} M x ${formatNumber(volume, 6)} L x ${formatNumber(mw, 3)} g/mol`;
+  }
+
+  if (solveFor === "volume" && mass && mw && concentration) {
+    result = mass / mw / concentration;
+    const display = result / volumeFactors[el.volumeUnit.value];
+    label = `${formatNumber(display)} ${unitLabels.volume[el.volumeUnit.value]}`;
+    detail = `${formatNumber(mass, 6)} g / ${formatNumber(mw, 3)} g/mol / ${formatNumber(concentration, 6)} M`;
+  }
+
+  if (solveFor === "mw" && mass && volume && concentration) {
+    result = mass / (volume * concentration);
+    label = `${formatNumber(result, 3)} g/mol`;
+    detail = `${formatNumber(mass, 6)} g / (${formatNumber(volume, 6)} L x ${formatNumber(concentration, 6)} M)`;
+  }
+
+  if (result === null || !Number.isFinite(result)) {
+    el.molarityAnswer.textContent = "Fill the required values.";
+    return;
+  }
+
+  el.molarityAnswer.innerHTML = `${label}<small>${detail}</small>`;
+}
+
+function rnaInputToMolar(value, unit, mw, volumeLiters) {
+  if (unit === "ngUl") return (value * 1e-3) / mw;
+  if (unit === "uM") return value * 1e-6;
+  if (unit === "pmol") {
+    if (!volumeLiters) return null;
+    return (value * 1e-12) / volumeLiters;
+  }
+  return null;
+}
+
+function rnaFromMolar(molar, mw, volumeLiters) {
+  return {
+    ngUl: molar * mw * 1000,
+    uM: molar * 1e6,
+    pmol: volumeLiters ? molar * volumeLiters * 1e12 : null,
+  };
+}
+
+function updateRnaConversion() {
+  const inputValue = numberValue(el.rnaConcInput);
+  const mw = numberValue(el.rnaMwInput);
+  const volume = numberValue(el.rnaVolumeInput);
+  const volumeLiters = volume ? volume * volumeFactors[el.rnaVolumeUnit.value] : null;
+
+  if (!inputValue || !mw) {
+    setMetric(el.rnaNgUlOutput, null);
+    setMetric(el.rnaUMOutput, null);
+    setMetric(el.rnaPmolOutput, null);
+    el.rnaConversionAnswer.textContent = "Enter RNA concentration and MW.";
+    return;
+  }
+
+  const molar = rnaInputToMolar(inputValue, el.rnaConcUnit.value, mw, volumeLiters);
+  if (!molar) {
+    setMetric(el.rnaNgUlOutput, null);
+    setMetric(el.rnaUMOutput, null);
+    setMetric(el.rnaPmolOutput, inputValue, 4);
+    el.rnaConversionAnswer.textContent = "pmol conversion needs a volume.";
+    return;
+  }
+
+  const result = rnaFromMolar(molar, mw, volumeLiters);
+  setMetric(el.rnaNgUlOutput, result.ngUl, 5);
+  setMetric(el.rnaUMOutput, result.uM, 5);
+  setMetric(el.rnaPmolOutput, result.pmol, 5);
+  el.rnaConversionAnswer.innerHTML = `${formatNumber(result.uM, 5)} uM<small>${formatNumber(result.ngUl, 5)} ng/uL${result.pmol === null ? "" : ` / ${formatNumber(result.pmol, 5)} pmol in ${formatNumber(volumeLiters / volumeFactors[el.rnaVolumeUnit.value], 5)} ${el.rnaVolumeUnit.value}`}</small>`;
+}
+
+function applyRnaPreset(preset) {
+  const length = numberValue(el.rnaLengthInput);
+  if (!length) return;
+  const factors = { rna: 340, ssdna: 330, dsdna: 660 };
+  el.rnaMwInput.value = String(length * factors[preset]);
+  el.rnaDilutionMwInput.value = el.rnaMwInput.value;
+  updateRnaConversion();
+  updateRnaDilution();
+}
+
+function proteinInputToMolar(value, unit, mw) {
+  if (unit === "mgmL") return value / mw;
+  if (unit === "uM") return value * 1e-6;
+  return null;
+}
+
+function proteinFromMolar(molar, mw) {
+  return {
+    mgMl: molar * mw,
+    uM: molar * 1e6,
+  };
+}
+
+function updateProteinConversion() {
+  const inputValue = numberValue(el.proteinConcInput);
+  const mw = numberValue(el.proteinMwInput);
+
+  if (!inputValue || !mw) {
+    setMetric(el.proteinMgMlOutput, null);
+    setMetric(el.proteinUMOutput, null);
+    el.proteinConversionAnswer.textContent = "Enter protein concentration and MW.";
+    return;
+  }
+
+  const molar = proteinInputToMolar(inputValue, el.proteinConcUnit.value, mw);
+  const result = proteinFromMolar(molar, mw);
+  setMetric(el.proteinMgMlOutput, result.mgMl, 5);
+  setMetric(el.proteinUMOutput, result.uM, 5);
+  el.proteinConversionAnswer.innerHTML = `${formatNumber(result.uM, 5)} uM<small>${formatNumber(result.mgMl, 5)} mg/mL at MW ${formatNumber(mw, 3)} g/mol</small>`;
+}
+
+function updateFoldDilution() {
+  const stock = numberValue(el.foldStockInput);
+  const target = numberValue(el.foldTargetInput);
+  const finalVolume = numberValue(el.foldFinalVolumeInput);
+  const unit = el.foldVolumeUnit.value;
+
+  if (!stock || !target || !finalVolume) {
+    el.foldDilutionAnswer.textContent = "Enter final volume.";
+    return;
+  }
+
+  if (target > stock) {
+    el.foldDilutionAnswer.innerHTML = `<span class="is-warning">Target must be lower than stock.</span>`;
+    return;
+  }
+
+  const stockVolume = (target / stock) * finalVolume;
+  const diluent = finalVolume - stockVolume;
+  el.foldDilutionAnswer.innerHTML = `${formatNumber(stockVolume, 5)} ${unit} stock<small>add ${formatNumber(diluent, 5)} ${unit} diluent to make ${formatNumber(finalVolume, 5)} ${unit}</small>`;
+}
+
+function updateMolarDilution() {
+  const stock = numberValue(el.molarStockInput);
+  const target = numberValue(el.molarTargetInput);
+  const finalVolume = numberValue(el.molarFinalVolumeInput);
+  const unit = el.molarVolumeUnit.value;
+
+  if (!stock || !target || !finalVolume) {
+    el.molarDilutionAnswer.textContent = "Enter stock, target, and final volume.";
+    return;
+  }
+
+  const stockBase = stock * bufferConcentrationFactors[el.molarStockUnit.value];
+  const targetBase = target * bufferConcentrationFactors[el.molarTargetUnit.value];
+  if (targetBase > stockBase) {
+    el.molarDilutionAnswer.innerHTML = `<span class="is-warning">Target concentration is higher than stock.</span>`;
+    return;
+  }
+
+  const stockVolume = (targetBase / stockBase) * finalVolume;
+  const diluent = finalVolume - stockVolume;
+  el.molarDilutionAnswer.innerHTML = `${formatNumber(stockVolume, 5)} ${unit} stock<small>add ${formatNumber(diluent, 5)} ${unit} diluent. C1V1 = C2V2.</small>`;
+}
+
+function targetAmountToMolar(value, unit, mw, finalLiters, converter) {
+  if (unit === "pmol") return (value * 1e-12) / finalLiters;
+  return converter(value, unit, mw, finalLiters);
+}
+
+function updateRnaDilution() {
+  const stockValue = numberValue(el.rnaStockInput);
+  const targetValue = numberValue(el.rnaTargetInput);
+  const mw = numberValue(el.rnaDilutionMwInput);
+  const finalVolume = numberValue(el.rnaDilutionVolumeInput);
+  const finalLiters = finalVolume ? finalVolume * volumeFactors[el.rnaDilutionVolumeUnit.value] : null;
+  const unit = el.rnaDilutionVolumeUnit.value;
+
+  if (!stockValue || !targetValue || !mw || !finalLiters) {
+    el.rnaDilutionAnswer.textContent = "Enter RNA stock, target, MW, and final volume.";
+    return;
+  }
+
+  const stockMolar = rnaInputToMolar(stockValue, el.rnaStockUnit.value, mw, finalLiters);
+  const targetMolar = targetAmountToMolar(targetValue, el.rnaTargetUnit.value, mw, finalLiters, rnaInputToMolar);
+  if (!stockMolar || !targetMolar) {
+    el.rnaDilutionAnswer.textContent = "pmol stock/target calculations need the final volume.";
+    return;
+  }
+  if (targetMolar > stockMolar) {
+    el.rnaDilutionAnswer.innerHTML = `<span class="is-warning">Target RNA concentration is higher than stock.</span>`;
+    return;
+  }
+
+  const stockLiters = (targetMolar / stockMolar) * finalLiters;
+  const stockDisplay = stockLiters / volumeFactors[unit];
+  const diluentDisplay = finalVolume - stockDisplay;
+  const target = rnaFromMolar(targetMolar, mw, finalLiters);
+  el.rnaDilutionAnswer.innerHTML = `${formatNumber(stockDisplay, 5)} ${unit} RNA stock<small>add ${formatNumber(diluentDisplay, 5)} ${unit} diluent. Final: ${formatNumber(target.uM, 5)} uM / ${formatNumber(target.ngUl, 5)} ng/uL / ${formatNumber(target.pmol, 5)} pmol.</small>`;
+}
+
+function updateProteinDilution() {
+  const stockValue = numberValue(el.proteinStockInput);
+  const targetValue = numberValue(el.proteinTargetInput);
+  const mw = numberValue(el.proteinDilutionMwInput);
+  const finalVolume = numberValue(el.proteinDilutionVolumeInput);
+  const finalLiters = finalVolume ? finalVolume * volumeFactors[el.proteinDilutionVolumeUnit.value] : null;
+  const unit = el.proteinDilutionVolumeUnit.value;
+
+  if (!stockValue || !targetValue || !mw || !finalLiters) {
+    el.proteinDilutionAnswer.textContent = "Enter protein stock, target, MW, and final volume.";
+    return;
+  }
+
+  const stockMolar = proteinInputToMolar(stockValue, el.proteinStockUnit.value, mw);
+  const targetMolar = proteinInputToMolar(targetValue, el.proteinTargetUnit.value, mw);
+  if (targetMolar > stockMolar) {
+    el.proteinDilutionAnswer.innerHTML = `<span class="is-warning">Target protein concentration is higher than stock.</span>`;
+    return;
+  }
+
+  const stockLiters = (targetMolar / stockMolar) * finalLiters;
+  const stockDisplay = stockLiters / volumeFactors[unit];
+  const diluentDisplay = finalVolume - stockDisplay;
+  const target = proteinFromMolar(targetMolar, mw);
+  el.proteinDilutionAnswer.innerHTML = `${formatNumber(stockDisplay, 5)} ${unit} protein stock<small>add ${formatNumber(diluentDisplay, 5)} ${unit} diluent. Final: ${formatNumber(target.uM, 5)} uM / ${formatNumber(target.mgMl, 5)} mg/mL.</small>`;
+}
+
+function cloneRecipe(recipe) {
+  return JSON.parse(JSON.stringify(recipe));
+}
+
+function newBufferDraft() {
+  return {
+    id: `custom-${Date.now()}`,
+    name: "",
+    note: "",
+    totalVolume: { amount: null, unit: "mL" },
+    diluentName: "ddH2O",
+    components: [],
+  };
+}
+
+function recipeIdFromName(name) {
+  return `custom-${name.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || Date.now()}`;
+}
+
+function loadCustomBufferRecipes() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(CUSTOM_BUFFER_STORAGE_KEY) || "[]");
+    customBufferRecipes = Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    customBufferRecipes = [];
+  }
+}
+
+function saveCustomBufferRecipes() {
+  localStorage.setItem(CUSTOM_BUFFER_STORAGE_KEY, JSON.stringify(customBufferRecipes));
+}
+
+function findBufferRecipe(id) {
+  return customBufferRecipes.find((item) => item.id === id) || null;
+}
+
+function syncBufferDraftMeta() {
+  if (!currentBufferDraft) return;
+  currentBufferDraft.name = el.bufferPresetNameInput.value.trim();
+  currentBufferDraft.note = el.bufferPresetNoteInput.value.trim();
+  currentBufferDraft.totalVolume = {
+    amount: numberValue(el.bufferTotalVolumeInput),
+    unit: el.bufferTotalVolumeUnit.value,
+  };
+  currentBufferDraft.diluentName = el.bufferDiluentNameInput.value.trim() || "ddH2O";
+}
+
+function bufferTotalVolumeLiters(recipe = currentBufferDraft) {
+  const amount = recipe?.totalVolume?.amount;
+  const unit = recipe?.totalVolume?.unit;
+  if (!Number.isFinite(amount) || !volumeFactors[unit]) return null;
+  return amount * volumeFactors[unit];
+}
+
+function bufferVolumeLabel(liters, preferredUnit = "mL") {
+  if (!Number.isFinite(liters)) return "-";
+  return `${formatNumber(liters / volumeFactors[preferredUnit], 5)} ${preferredUnit}`;
+}
+
+function bufferTotalVolumeLabel(recipe) {
+  if (!recipe?.totalVolume || !Number.isFinite(recipe.totalVolume.amount)) return "-";
+  return `${formatNumber(recipe.totalVolume.amount, 5)} ${recipe.totalVolume.unit}`;
+}
+
+function bufferSolutionVolumeLiters(component, recipe = currentBufferDraft) {
+  const totalLiters = bufferTotalVolumeLiters(recipe);
+  const stock = component.stockConc * bufferConcentrationFactors[component.stockUnit];
+  const target = component.targetConc * bufferConcentrationFactors[component.targetUnit];
+  if (!totalLiters || !stock || !target) return null;
+  return (target / stock) * totalLiters;
+}
+
+function bufferComponentInputLabel(component) {
+  if (component.type === "powder") return `${formatNumber(component.amount, 5)} ${component.unit}`;
+  return `${formatNumber(component.stockConc, 5)} ${component.stockUnit} stock -> ${formatNumber(component.targetConc, 5)} ${component.targetUnit} final`;
+}
+
+function bufferComponentAddLabel(component, recipe = currentBufferDraft) {
+  if (component.type === "powder") return `${formatNumber(component.amount, 5)} ${component.unit}`;
+  const liters = bufferSolutionVolumeLiters(component, recipe);
+  return bufferVolumeLabel(liters, recipe?.totalVolume?.unit || "mL");
+}
+
+function bufferSolutionVolumeSum(recipe) {
+  return recipe.components.reduce((sum, component) => {
+    if (component.type !== "solution") return sum;
+    const liters = bufferSolutionVolumeLiters(component, recipe);
+    return Number.isFinite(liters) ? sum + liters : sum;
+  }, 0);
+}
+
+function bufferDiluentAddLabel(recipe) {
+  const totalLiters = bufferTotalVolumeLiters(recipe);
+  if (!totalLiters) return "q.s. to total volume";
+  const diluentLiters = totalLiters - bufferSolutionVolumeSum(recipe);
+  if (diluentLiters < 0) return "solution volume exceeds total";
+  return `${bufferVolumeLabel(diluentLiters, recipe.totalVolume.unit)} or q.s. to ${bufferTotalVolumeLabel(recipe)}`;
+}
+
+function populateBufferPresets() {
+  const selected = el.bufferPresetSelect.value;
+  clearChildren(el.bufferPresetSelect);
+
+  if (!customBufferRecipes.length) {
+    const option = document.createElement("option");
+    option.value = "";
+    option.textContent = "No saved preset";
+    el.bufferPresetSelect.append(option);
+    return;
+  }
+
+  customBufferRecipes.forEach((recipe) => {
+    const option = document.createElement("option");
+    option.value = recipe.id;
+    option.textContent = recipe.name;
+    el.bufferPresetSelect.append(option);
+  });
+
+  if (selected && customBufferRecipes.some((recipe) => recipe.id === selected)) {
+    el.bufferPresetSelect.value = selected;
+  }
+}
+
+function renderBufferRecipe() {
+  const recipe = findBufferRecipe(el.bufferPresetSelect.value);
+  clearChildren(el.bufferTableBody);
+
+  if (!recipe) {
+    setTableMessage(el.bufferTableBody, 2, "No saved preset.");
+    el.bufferNote.textContent = "Create a preset in Edit preset mode.";
+    return;
+  }
+
+  recipe.components.forEach((component) => {
+    const row = document.createElement("tr");
+    const nameCell = document.createElement("td");
+    const addCell = document.createElement("td");
+    nameCell.textContent = component.name;
+    addCell.textContent = bufferComponentAddLabel(component, recipe);
+    row.append(nameCell, addCell);
+    el.bufferTableBody.append(row);
+  });
+
   const row = document.createElement("tr");
-  const cell = document.createElement("td");
-  cell.colSpan = colspan;
-  cell.textContent = message;
-  row.append(cell);
-  tbody.append(row);
+  const nameCell = document.createElement("td");
+  const addCell = document.createElement("td");
+  nameCell.textContent = recipe.diluentName || "Diluent";
+  addCell.textContent = bufferDiluentAddLabel(recipe);
+  row.append(nameCell, addCell);
+  el.bufferTableBody.append(row);
+
+  el.bufferNote.textContent = [bufferTotalVolumeLabel(recipe), recipe.note].filter(Boolean).join(" / ");
+}
+
+function renderBufferDraft() {
+  if (!currentBufferDraft) return;
+
+  el.bufferPresetNameInput.value = currentBufferDraft.name || "";
+  el.bufferTotalVolumeInput.value = currentBufferDraft.totalVolume?.amount || "";
+  el.bufferTotalVolumeUnit.value = currentBufferDraft.totalVolume?.unit || "mL";
+  el.bufferDiluentNameInput.value = currentBufferDraft.diluentName || "ddH2O";
+  el.bufferPresetNoteInput.value = currentBufferDraft.note || "";
+  clearChildren(el.bufferComponentTableBody);
+
+  if (!currentBufferDraft.components.length) {
+    setTableMessage(el.bufferComponentTableBody, 4, "Add components to save a preset.");
+    return;
+  }
+
+  currentBufferDraft.components.forEach((component, index) => {
+    const row = document.createElement("tr");
+    const nameCell = document.createElement("td");
+    const typeCell = document.createElement("td");
+    const amountCell = document.createElement("td");
+    const actionCell = document.createElement("td");
+    const removeButton = document.createElement("button");
+
+    nameCell.textContent = component.name;
+    typeCell.textContent = component.type === "powder" ? "Powder" : "Stock solution";
+    amountCell.textContent =
+      component.type === "solution"
+        ? `${bufferComponentAddLabel(component, currentBufferDraft)} (${bufferComponentInputLabel(component)})`
+        : bufferComponentInputLabel(component);
+    removeButton.type = "button";
+    removeButton.className = "secondary-button table-button";
+    removeButton.textContent = "Remove";
+    removeButton.addEventListener("click", () => {
+      currentBufferDraft.components.splice(index, 1);
+      renderBufferDraft();
+    });
+
+    actionCell.append(removeButton);
+    row.append(nameCell, typeCell, amountCell, actionCell);
+    el.bufferComponentTableBody.append(row);
+  });
+}
+
+function addBufferComponent() {
+  if (!currentBufferDraft) currentBufferDraft = newBufferDraft();
+  syncBufferDraftMeta();
+
+  const name = el.bufferComponentNameInput.value.trim();
+  const type = el.bufferComponentTypeSelect.value;
+
+  if (!name) {
+    el.bufferNote.textContent = "Enter a component name.";
+    return;
+  }
+
+  if (type === "powder") {
+    const amount = numberValue(el.bufferPowderAmountInput);
+    const unit = el.bufferPowderAmountUnit.value;
+    if (!amount) {
+      el.bufferNote.textContent = "Enter powder amount.";
+      return;
+    }
+    currentBufferDraft.components.push({ name, type, amount, unit });
+    el.bufferPowderAmountInput.value = "";
+  } else {
+    const stockConc = numberValue(el.bufferStockConcInput);
+    const targetConc = numberValue(el.bufferTargetConcInput);
+    const stockUnit = el.bufferStockConcUnit.value;
+    const targetUnit = el.bufferTargetConcUnit.value;
+    const stockBase = stockConc ? stockConc * bufferConcentrationFactors[stockUnit] : null;
+    const targetBase = targetConc ? targetConc * bufferConcentrationFactors[targetUnit] : null;
+
+    if (!stockConc || !targetConc) {
+      el.bufferNote.textContent = "Enter stock and target concentration.";
+      return;
+    }
+    if (targetBase > stockBase) {
+      el.bufferNote.textContent = "Target must be lower than stock.";
+      return;
+    }
+    if (!bufferTotalVolumeLiters()) {
+      el.bufferNote.textContent = "Enter total volume first.";
+      return;
+    }
+    currentBufferDraft.components.push({ name, type, stockConc, stockUnit, targetConc, targetUnit });
+    el.bufferStockConcInput.value = "";
+    el.bufferTargetConcInput.value = "";
+  }
+
+  el.bufferComponentNameInput.value = "";
+  renderBufferDraft();
+}
+
+function saveBufferPreset() {
+  if (!currentBufferDraft) return;
+  syncBufferDraftMeta();
+
+  if (!currentBufferDraft.name || !currentBufferDraft.totalVolume.amount || !currentBufferDraft.components.length) {
+    el.bufferNote.textContent = "Preset name, total volume, and at least one component are required.";
+    return;
+  }
+
+  if (bufferSolutionVolumeSum(currentBufferDraft) > bufferTotalVolumeLiters(currentBufferDraft)) {
+    el.bufferNote.textContent = "Stock solution volume exceeds total volume.";
+    return;
+  }
+
+  currentBufferDraft.id = recipeIdFromName(currentBufferDraft.name);
+  const index = customBufferRecipes.findIndex((recipe) => recipe.id === currentBufferDraft.id);
+  if (index >= 0) {
+    customBufferRecipes[index] = cloneRecipe(currentBufferDraft);
+  } else {
+    customBufferRecipes.push(cloneRecipe(currentBufferDraft));
+  }
+
+  saveCustomBufferRecipes();
+  populateBufferPresets();
+  el.bufferPresetSelect.value = currentBufferDraft.id;
+  renderBufferRecipe();
+  el.bufferNote.textContent = `Saved ${currentBufferDraft.name}.`;
+}
+
+function deleteBufferPreset() {
+  const selected = el.bufferPresetSelect.value;
+  if (!selected) return;
+  customBufferRecipes = customBufferRecipes.filter((recipe) => recipe.id !== selected);
+  saveCustomBufferRecipes();
+  populateBufferPresets();
+  currentBufferDraft = newBufferDraft();
+  renderBufferDraft();
+  renderBufferRecipe();
+}
+
+function updateBufferComponentTypeFields() {
+  const isPowder = el.bufferComponentTypeSelect.value === "powder";
+  el.bufferPowderFields.forEach((field) => {
+    field.hidden = !isPowder;
+  });
+  el.bufferSolutionFields.forEach((field) => {
+    field.hidden = isPowder;
+  });
 }
 
 function cleanDogmaSequence(value) {
@@ -407,14 +1094,6 @@ function cleanDogmaSequence(value) {
 
 function invalidBases(sequence, allowed) {
   return [...new Set([...sequence].filter((base) => !allowed.includes(base)))];
-}
-
-function setActiveDogmaMode(mode) {
-  dogmaMode = mode;
-  el.dogmaModeButtons.forEach((button) => {
-    button.classList.toggle("active", button.dataset.dogmaMode === mode);
-  });
-  updateDogma();
 }
 
 function reverseComplement(sequence) {
@@ -441,7 +1120,7 @@ function dogmaModeLabel(mode) {
     transcribe: "DNA to RNA transcription",
     reverseTranscribe: "RNA to DNA reverse transcription",
     translate: "RNA to protein translation",
-    reverseComplement: "Reverse complementary conversion",
+    reverseComplement: "Reverse complement",
   }[mode];
 }
 
@@ -455,13 +1134,13 @@ function updateDogma() {
   if (dogmaMode === "transcribe") {
     invalid = invalidBases(sequence, "ACGT");
     output = sequence.replaceAll("T", "U");
-    note = "DNA template/coding strand convention은 실험 설계에 맞춰 확인하세요. 여기서는 입력 DNA의 T를 U로 치환합니다.";
+    note = "Input DNA T is replaced with U.";
   }
 
   if (dogmaMode === "reverseTranscribe") {
     invalid = invalidBases(sequence, "ACGU");
     output = sequence.replaceAll("U", "T");
-    note = "RNA 서열의 U를 T로 치환해 cDNA 형태로 표시합니다.";
+    note = "Input RNA U is replaced with T.";
   }
 
   if (dogmaMode === "translate") {
@@ -469,15 +1148,13 @@ function updateDogma() {
     invalid = invalidBases(rna, "ACGU");
     output = translateRna(rna);
     unit = "aa";
-    note = "Standard genetic code, 1번 reading frame 기준입니다. Stop codon은 *로 표시합니다.";
+    note = "Standard genetic code, first reading frame.";
   }
 
   if (dogmaMode === "reverseComplement") {
     invalid = invalidBases(sequence, "ACGTU");
     output = reverseComplement(sequence);
-    note = sequence.includes("U") && !sequence.includes("T")
-      ? "RNA reverse complement로 계산했습니다."
-      : "DNA reverse complement로 계산했습니다. U가 섞여 있으면 A로 보완합니다.";
+    note = sequence.includes("U") && !sequence.includes("T") ? "RNA reverse complement." : "DNA reverse complement.";
   }
 
   el.dogmaOutput.value = invalid.length ? "" : output;
@@ -488,7 +1165,7 @@ function updateDogma() {
   setMetric(el.dogmaFrameOutput, dogmaMode === "translate" ? Math.floor(sequence.length / 3) : null, 0);
 
   if (invalid.length) {
-    el.dogmaNote.innerHTML = `<span class="is-warning">지원하지 않는 문자: ${invalid.join(", ")}</span>`;
+    el.dogmaNote.innerHTML = `<span class="is-warning">Unsupported characters: ${invalid.join(", ")}</span>`;
   } else {
     el.dogmaNote.textContent = `${dogmaModeLabel(dogmaMode)}. ${note}`;
   }
@@ -499,934 +1176,121 @@ async function copyDogmaOutput() {
   try {
     if (navigator.clipboard) {
       await navigator.clipboard.writeText(el.dogmaOutput.value);
-      el.dogmaNote.textContent = "결과를 클립보드에 복사했습니다.";
+      el.dogmaNote.textContent = "Output copied.";
       return;
     }
   } catch (error) {
-    // Fall through to selecting the output for manual copy.
+    // Fall through to selecting the text.
   }
   el.dogmaOutput.focus();
   el.dogmaOutput.select();
-  el.dogmaNote.textContent = "결과를 선택했습니다. 브라우저 메뉴로 복사하세요.";
+  el.dogmaNote.textContent = "Output selected.";
 }
 
-function updateSequence() {
-  const sequence = cleanSequence(el.sequenceInput.value, moleculeType);
-  const result = calculateMw(sequence, moleculeType);
-  currentMw = result.mw;
-
-  setMetric(el.lengthOutput, result.length, 0);
-  setMetric(el.mwOutput, result.mw, 3);
-
-  if (moleculeType === "protein") {
-    el.gcOutput.textContent = "-";
-  } else {
-    setMetric(el.gcOutput, gcPercent(sequence), 1);
-  }
-
-  if (result.invalid.length) {
-    el.sequenceNote.innerHTML = `<span class="is-warning">지원하지 않는 문자: ${result.invalid.join(", ")}</span>`;
-  } else if (moleculeType === "protein") {
-    el.sequenceNote.textContent = "Protein은 평균 residue mass에 H2O를 더합니다.";
-  } else {
-    el.sequenceNote.textContent = "RNA/DNA는 single-stranded oligo 기준이며, T/U는 선택한 타입에 맞춰 변환합니다.";
-  }
-
-  updateConversion();
-}
-
-function toBaseMass() {
-  const mass = numberValue(el.massInput);
-  return mass === null ? null : mass * massFactors[el.massUnit.value];
-}
-
-function toBaseVolume() {
-  const volume = numberValue(el.volumeInput);
-  return volume === null ? null : volume * volumeFactors[el.volumeUnit.value];
-}
-
-function toBaseConcentration() {
-  const concentration = numberValue(el.concentrationInput);
-  return concentration === null ? null : concentration * concentrationFactors[el.concentrationUnit.value];
-}
-
-function updateTargetState() {
-  document.querySelectorAll("[data-solve-field]").forEach((field) => {
-    field.classList.toggle("is-target", field.dataset.solveField === el.solveFor.value);
-  });
-}
-
-function updateMolarity() {
-  updateTargetState();
-
-  const solveFor = el.solveFor.value;
-  const mass = toBaseMass();
-  const mw = numberValue(el.mwInput);
-  const volume = toBaseVolume();
-  const concentration = toBaseConcentration();
-
-  const missingText = "필요한 입력값을 채우면 결과가 표시됩니다.";
-  let result = null;
-  let label = "";
-  let detail = "";
-
-  if (solveFor === "concentration" && mass && mw && volume) {
-    result = mass / mw / volume;
-    const display = result / concentrationFactors[el.concentrationUnit.value];
-    label = `${formatNumber(display)} ${unitLabels.concentration[el.concentrationUnit.value]}`;
-    detail = `Mass ${formatNumber(mass, 6)} g / MW ${formatNumber(mw, 3)} g/mol / Volume ${formatNumber(volume, 6)} L`;
-  }
-
-  if (solveFor === "mass" && mw && volume && concentration) {
-    result = concentration * volume * mw;
-    const display = result / massFactors[el.massUnit.value];
-    label = `${formatNumber(display)} ${unitLabels.mass[el.massUnit.value]}`;
-    detail = `${formatNumber(concentration, 6)} M x ${formatNumber(volume, 6)} L x ${formatNumber(mw, 3)} g/mol`;
-  }
-
-  if (solveFor === "volume" && mass && mw && concentration) {
-    result = mass / mw / concentration;
-    const display = result / volumeFactors[el.volumeUnit.value];
-    label = `${formatNumber(display)} ${unitLabels.volume[el.volumeUnit.value]}`;
-    detail = `${formatNumber(mass, 6)} g / ${formatNumber(mw, 3)} g/mol / ${formatNumber(concentration, 6)} M`;
-  }
-
-  if (solveFor === "mw" && mass && volume && concentration) {
-    result = mass / (volume * concentration);
-    label = `${formatNumber(result, 3)} g/mol`;
-    detail = `${formatNumber(mass, 6)} g / (${formatNumber(volume, 6)} L x ${formatNumber(concentration, 6)} M)`;
-  }
-
-  if (result === null || !Number.isFinite(result)) {
-    el.molarityAnswer.textContent = missingText;
-    return;
-  }
-
-  el.molarityAnswer.innerHTML = `${label}<small>${detail}</small>`;
-}
-
-function updateConversion() {
-  const concentrationNgUl = numberValue(el.ngUlInput);
-  const mw = numberValue(el.conversionMwInput);
-  const targetVolume = numberValue(el.nucleicTargetVolumeInput);
-  const targetVolumeLiters = targetVolume ? targetVolume * volumeFactors[el.nucleicTargetVolumeUnit.value] : null;
-
-  if (!concentrationNgUl || !mw) {
-    el.nucleicNgUlOutput.textContent = "-";
-    el.nMOutput.textContent = "-";
-    el.uMOutput.textContent = "-";
-    el.nucleicPmolOutput.textContent = "-";
-    el.nucleicAnswer.textContent = "값을 입력하면 결과값이 표시됩니다.";
-    return;
-  }
-
-  const molar = (concentrationNgUl * 1e-3) / mw;
-  const nM = (concentrationNgUl * 1e6) / mw;
-  const uM = (concentrationNgUl * 1e3) / mw;
-  const pmol = targetVolumeLiters ? molar * targetVolumeLiters * 1e12 : null;
-  setMetric(el.nucleicNgUlOutput, concentrationNgUl, 5);
-  setMetric(el.nMOutput, nM, 4);
-  setMetric(el.uMOutput, uM, 4);
-  setMetric(el.nucleicPmolOutput, pmol, 4);
-
-  const pmolDetail = targetVolumeLiters
-    ? ` / ${formatNumber(pmol, 4)} pmol in ${formatNumber(targetVolumeLiters, 6)} L`
-    : " / pmol 계산에는 volume 필요";
-  el.nucleicAnswer.innerHTML = `${formatNumber(uM, 4)} uM (= ${formatNumber(uM, 4)} pmol/uL)<small>${formatNumber(concentrationNgUl, 5)} ng/uL / ${formatNumber(nM, 4)} nM / MW ${formatNumber(mw, 3)} g/mol${pmolDetail}</small>`;
-}
-
-function applyPreset(preset) {
-  const length = numberValue(el.presetLengthInput);
-
-  if (!length) return;
-
-  const factors = {
-    ssdna: 330,
-    dsdna: 660,
-    rna: 340,
-  };
-
-  if (factors[preset]) {
-    el.conversionMwInput.value = String(length * factors[preset]);
-    updateConversion();
-  }
-}
-
-function useMwInCalculators() {
-  if (!currentMw) return;
-  const rounded = currentMw.toFixed(3);
-  el.mwInput.value = rounded;
-  el.conversionMwInput.value = rounded;
-  el.proteinMwInput.value = rounded;
-  updateMolarity();
-  updateConversion();
-  updateProteinMassMole();
-}
-
-function applyProteinEntry(entry) {
-  const mw = entry.sequence?.molWeight;
-  if (!Number.isFinite(mw)) return;
-
-  currentMw = mw;
-  setActiveMolecule("protein");
-  el.sequenceInput.value = "";
-  el.mwInput.value = mw.toFixed(3);
-  el.conversionMwInput.value = mw.toFixed(3);
-  el.proteinMwInput.value = mw.toFixed(3);
-  setMetric(el.mwOutput, mw, 3);
-  setMetric(el.lengthOutput, entry.sequence?.length || null, 0);
-  el.gcOutput.textContent = "-";
-
-  const gene = getGeneName(entry);
-  const organism = entry.organism?.scientificName || "unknown organism";
-  el.sequenceNote.textContent = `${getProteinDisplayName(entry)}${gene ? ` (${gene})` : ""}, ${organism}, UniProt ${entry.primaryAccession}`;
-  updateMolarity();
-  updateConversion();
-  updateProteinMassMole();
-}
-
-function renderProteinResults(entries) {
-  clearChildren(el.proteinSearchResults);
-
-  if (!entries.length) {
-    el.proteinSearchStatus.textContent = "검색 결과가 없습니다. 단백질명이나 organism을 조금 다르게 입력해보세요.";
-    return;
-  }
-
-  el.proteinSearchStatus.textContent = `${entries.length}개 결과를 찾았습니다. 원하는 항목을 선택하세요.`;
-
-  entries.forEach((entry) => {
-    const mw = entry.sequence?.molWeight;
-    if (!Number.isFinite(mw)) return;
-
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "search-result";
-
-    const text = document.createElement("span");
-    const title = document.createElement("strong");
-    const meta = document.createElement("small");
-    const mwText = document.createElement("span");
-
-    title.textContent = getProteinDisplayName(entry);
-    const gene = getGeneName(entry);
-    meta.textContent = [
-      entry.primaryAccession,
-      gene || null,
-      entry.organism?.scientificName || null,
-      entry.sequence?.length ? `${entry.sequence.length} aa` : null,
-    ]
-      .filter(Boolean)
-      .join(" · ");
-    mwText.className = "result-mw";
-    mwText.textContent = `${formatNumber(mw, 3)} g/mol`;
-
-    text.append(title, meta);
-    button.append(text, mwText);
-    button.addEventListener("click", () => applyProteinEntry(entry));
-    el.proteinSearchResults.append(button);
-  });
-}
-
-async function searchProteinByName() {
-  const proteinName = el.proteinSearchInput.value.trim();
-  const organism = el.organismSearchInput.value.trim();
-
-  if (!proteinName) {
-    el.proteinSearchStatus.textContent = "검색할 단백질 이름을 입력하세요.";
-    return;
-  }
-
-  clearChildren(el.proteinSearchResults);
-  el.proteinSearchStatus.textContent = "UniProt에서 검색 중...";
-  el.proteinSearchButton.disabled = true;
-
-  try {
-    const query = [proteinName, organism].filter(Boolean).join(" ");
-    const params = new URLSearchParams({
-      query,
-      fields: "accession,protein_name,gene_names,organism_name,length,mass",
-      format: "json",
-      size: "8",
-    });
-    const response = await fetch(`https://rest.uniprot.org/uniprotkb/search?${params.toString()}`);
-    if (!response.ok) throw new Error(`UniProt ${response.status}`);
-    const data = await response.json();
-    renderProteinResults(data.results || []);
-  } catch (error) {
-    el.proteinSearchStatus.textContent =
-      "UniProt 검색에 실패했습니다. 인터넷 연결 또는 CORS/네트워크 상태를 확인하세요.";
-  } finally {
-    el.proteinSearchButton.disabled = false;
-  }
-}
-
-function updateProteinMassMole() {
-  const inputValue = numberValue(el.proteinConcInput);
-  const inputUnit = el.proteinConcUnit.value;
-  const mw = numberValue(el.proteinMwInput);
-  const volume = numberValue(el.proteinTargetVolumeInput);
-  const volumeLiters = volume ? volume * volumeFactors[el.proteinTargetVolumeUnit.value] : null;
-  let molar = null;
-
-  if (!inputValue || !mw) {
-    el.proteinMgMlOutput.textContent = "-";
-    el.proteinNgUlOutput.textContent = "-";
-    el.proteinUMOutput.textContent = "-";
-    el.proteinPMOutput.textContent = "-";
-    el.proteinPmolOutput.textContent = "-";
-    el.proteinMassAnswer.textContent = "값을 입력하면 결과값이 표시됩니다.";
-    return;
-  }
-
-  if (proteinConcentrationFactors[inputUnit]) {
-    const gramsPerLiter = inputValue * proteinConcentrationFactors[inputUnit];
-    molar = gramsPerLiter / mw;
-  }
-
-  if (proteinMolarityFactors[inputUnit]) {
-    molar = inputValue * proteinMolarityFactors[inputUnit];
-  }
-
-  if (inputUnit === "pmol") {
-    if (!volumeLiters) {
-      el.proteinMgMlOutput.textContent = "-";
-      el.proteinNgUlOutput.textContent = "-";
-      el.proteinUMOutput.textContent = "-";
-      el.proteinPMOutput.textContent = "-";
-      setMetric(el.proteinPmolOutput, inputValue, 4);
-      el.proteinMassAnswer.textContent = "pmol을 농도로 바꾸려면 volume을 입력하세요.";
-      return;
-    }
-    molar = (inputValue * 1e-12) / volumeLiters;
-  }
-
-  const mgMl = molar * mw;
-  const ngUl = mgMl * 1000;
-  const uM = molar * 1e6;
-  const pM = molar * 1e12;
-  const pmol = volumeLiters ? molar * volumeLiters * 1e12 : null;
-
-  setMetric(el.proteinMgMlOutput, mgMl, 5);
-  setMetric(el.proteinNgUlOutput, ngUl, 5);
-  setMetric(el.proteinUMOutput, uM, 5);
-  setMetric(el.proteinPMOutput, pM, 5);
-  setMetric(el.proteinPmolOutput, pmol, 5);
-
-  const pmolDetail = volumeLiters ? ` / ${formatNumber(pmol, 5)} pmol in ${formatNumber(volumeLiters, 6)} L` : "";
-  el.proteinMassAnswer.innerHTML = `${formatNumber(uM, 5)} uM<small>${formatNumber(mgMl, 5)} mg/mL / ${formatNumber(ngUl, 5)} ng/uL${pmolDetail}</small>`;
-}
-
-function dilutionFinalVolume() {
-  const volume = numberValue(el.dilutionFinalVolumeInput);
-  return volume === null ? null : volume;
-}
-
-function updateDilutionTable() {
-  const finalVolume = dilutionFinalVolume();
-  clearChildren(el.dilutionTableBody);
-  el.dilutionTotalMaterialOutput.textContent = "-";
-  el.dilutionDiluentOutput.textContent = "-";
-
-  if (!dilutionMaterials.length) {
-    setTableMessage(el.dilutionTableBody, 4, "Material과 1:X를 추가하면 계산됩니다.");
-    el.dilutionSummary.textContent = "여러 material을 추가하면 각 material 부피를 합산한 뒤 남은 부피를 diluent로 계산합니다.";
-    return;
-  }
-
-  if (!finalVolume) {
-    setTableMessage(el.dilutionTableBody, 4, "최종 부피를 입력하면 계산됩니다.");
-    el.dilutionSummary.textContent = "최종 부피를 입력하면 material 합계와 diluent 부피가 표시됩니다.";
-    return;
-  }
-
-  const unit = el.dilutionVolumeUnit.value;
-  const calculatedMaterials = dilutionMaterials.map((item) => ({
-    ...item,
-    materialVolume: finalVolume / item.ratio,
-  }));
-  const totalMaterialVolume = calculatedMaterials.reduce((sum, item) => sum + item.materialVolume, 0);
-  const diluentVolume = finalVolume - totalMaterialVolume;
-
-  setMetric(el.dilutionTotalMaterialOutput, totalMaterialVolume, 5);
-  setMetric(el.dilutionDiluentOutput, diluentVolume, 5);
-
-  calculatedMaterials.forEach((item, index) => {
-    const row = document.createElement("tr");
-    const removeButton = document.createElement("button");
-    removeButton.type = "button";
-    removeButton.className = "secondary-button table-button";
-    removeButton.textContent = "삭제";
-    removeButton.addEventListener("click", () => {
-      dilutionMaterials.splice(index, 1);
-      updateDilutionTable();
-    });
-
-    [
-      item.name,
-      `1:${formatNumber(item.ratio, 4)}`,
-      `${formatNumber(item.materialVolume, 5)} ${unit}`,
-    ].forEach((value) => {
-      const cell = document.createElement("td");
-      cell.textContent = value;
-      row.append(cell);
-    });
-
-    const actionCell = document.createElement("td");
-    actionCell.append(removeButton);
-    row.append(actionCell);
-    el.dilutionTableBody.append(row);
-  });
-
-  if (diluentVolume < 0) {
-    el.dilutionSummary.innerHTML = `<span class="is-warning">Material 합계가 final volume보다 큽니다. 1:X 조건 또는 final volume을 확인하세요.</span>`;
-    return;
-  }
-
-  const materialDetail = calculatedMaterials
-    .map((item) => `${item.name} ${formatNumber(item.materialVolume, 5)} ${unit}`)
-    .join(" + ");
-  el.dilutionSummary.innerHTML = `${materialDetail} + diluent ${formatNumber(diluentVolume, 5)} ${unit}<small>total material ${formatNumber(totalMaterialVolume, 5)} ${unit} / final ${formatNumber(finalVolume, 5)} ${unit}</small>`;
-}
-
-function addDilutionMaterial() {
-  const name = el.dilutionMaterialInput.value.trim();
-  const ratio = numberValue(el.dilutionRatioInput);
-
-  if (!name || !ratio || ratio < 1) {
-    el.dilutionNote.textContent = "Material 이름과 1 이상인 X 값을 입력하세요.";
-    return;
-  }
-
-  dilutionMaterials.push({ name, ratio });
-  el.dilutionMaterialInput.value = "";
-  el.dilutionRatioInput.value = "";
-  el.dilutionNote.textContent = `${name} 1:${formatNumber(ratio, 4)} 조건을 추가했습니다.`;
-  updateDilutionTable();
-}
-
-function cloneRecipe(recipe) {
-  return JSON.parse(JSON.stringify(recipe));
-}
-
-function newBufferDraft() {
-  return {
-    id: `custom-${Date.now()}`,
-    name: "",
-    note: "",
-    source: "custom",
-    totalVolume: {
-      amount: null,
-      unit: "mL",
-    },
-    diluentName: "ddH2O",
-    components: [],
-  };
-}
-
-function recipeIdFromName(name) {
-  return `custom-${name.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || Date.now()}`;
-}
-
-function validBufferRecipe(recipe) {
-  return (
-    recipe &&
-    typeof recipe.id === "string" &&
-    typeof recipe.name === "string" &&
-    recipe.totalVolume &&
-    Number.isFinite(recipe.totalVolume.amount) &&
-    recipe.totalVolume.amount > 0 &&
-    typeof recipe.diluentName === "string" &&
-    Array.isArray(recipe.components) &&
-    recipe.components.every((component) => {
-      if (component.type === "powder") {
-        return Number.isFinite(component.amount) && component.amount > 0 && ["g", "mg"].includes(component.unit);
-      }
-      if (component.type === "solution") {
-        return (
-          Number.isFinite(component.stockConc) &&
-          component.stockConc > 0 &&
-          Number.isFinite(component.targetConc) &&
-          component.targetConc > 0 &&
-          bufferConcentrationFactors[component.stockUnit] &&
-          bufferConcentrationFactors[component.targetUnit]
-        );
-      }
-      return false;
-    })
-  );
-}
-
-function loadCustomBufferRecipes() {
-  try {
-    const parsed = JSON.parse(localStorage.getItem(CUSTOM_BUFFER_STORAGE_KEY) || "[]");
-    customBufferRecipes = Array.isArray(parsed) ? parsed.filter(validBufferRecipe) : [];
-  } catch (error) {
-    customBufferRecipes = [];
-  }
-}
-
-function saveCustomBufferRecipes() {
-  localStorage.setItem(CUSTOM_BUFFER_STORAGE_KEY, JSON.stringify(customBufferRecipes));
-}
-
-function allBufferRecipes() {
-  return [...customBufferRecipes];
-}
-
-function findBufferRecipe(id) {
-  return allBufferRecipes().find((item) => item.id === id) || null;
-}
-
-function bufferTypeLabel(type) {
-  return type === "powder" ? "Powder" : "Stock solution";
-}
-
-function bufferTotalVolumeLiters(recipe = currentBufferDraft) {
-  const amount = recipe?.totalVolume?.amount;
-  const unit = recipe?.totalVolume?.unit;
-  if (!Number.isFinite(amount) || !volumeFactors[unit]) return null;
-  return amount * volumeFactors[unit];
-}
-
-function bufferVolumeLabel(liters, preferredUnit = "mL") {
-  if (!Number.isFinite(liters)) return "-";
-  const factor = volumeFactors[preferredUnit] || 1e-3;
-  return `${formatNumber(liters / factor, 5)} ${preferredUnit}`;
-}
-
-function bufferTotalVolumeLabel(recipe) {
-  if (!recipe?.totalVolume || !Number.isFinite(recipe.totalVolume.amount)) return "-";
-  return `${formatNumber(recipe.totalVolume.amount, 5)} ${recipe.totalVolume.unit}`;
-}
-
-function bufferPowderLabel(component) {
-  if (!Number.isFinite(component.amount)) return "-";
-  return `${formatNumber(component.amount, 5)} ${component.unit}`;
-}
-
-function bufferSolutionVolumeLiters(component, recipe = currentBufferDraft) {
-  const totalLiters = bufferTotalVolumeLiters(recipe);
-  const stock = component.stockConc * bufferConcentrationFactors[component.stockUnit];
-  const target = component.targetConc * bufferConcentrationFactors[component.targetUnit];
-  if (!totalLiters || !stock || !target) return null;
-  return (target / stock) * totalLiters;
-}
-
-function bufferComponentInputLabel(component) {
-  if (component.type === "powder") return bufferPowderLabel(component);
-  return `${formatNumber(component.stockConc, 5)} ${component.stockUnit} stock -> ${formatNumber(component.targetConc, 5)} ${component.targetUnit} final`;
-}
-
-function bufferComponentAddLabel(component, recipe = currentBufferDraft) {
-  if (component.type === "powder") return bufferPowderLabel(component);
-  const liters = bufferSolutionVolumeLiters(component, recipe);
-  return bufferVolumeLabel(liters, recipe?.totalVolume?.unit || "mL");
-}
-
-function syncBufferDraftMeta() {
-  if (!currentBufferDraft) return;
-  currentBufferDraft.name = el.bufferPresetNameInput.value.trim();
-  currentBufferDraft.note = el.bufferPresetNoteInput.value.trim();
-  currentBufferDraft.totalVolume = {
-    amount: numberValue(el.bufferTotalVolumeInput),
-    unit: el.bufferTotalVolumeUnit.value,
-  };
-  currentBufferDraft.diluentName = el.bufferDiluentNameInput.value.trim() || "ddH2O";
-}
-
-function populateBufferPresets() {
-  const selected = el.bufferPresetSelect.value;
-  clearChildren(el.bufferPresetSelect);
-
-  if (!customBufferRecipes.length) {
-    const option = document.createElement("option");
-    option.value = "";
-    option.textContent = "저장된 preset 없음";
-    el.bufferPresetSelect.append(option);
-    return;
-  }
-
-  customBufferRecipes.forEach((recipe) => {
-    const option = document.createElement("option");
-    option.value = recipe.id;
-    option.textContent = recipe.name;
-    el.bufferPresetSelect.append(option);
-  });
-
-  if (selected && customBufferRecipes.some((recipe) => recipe.id === selected)) {
-    el.bufferPresetSelect.value = selected;
-  }
-}
-
-function renderBufferDraft() {
-  if (!currentBufferDraft) return;
-
-  el.bufferPresetNameInput.value = currentBufferDraft.name || "";
-  el.bufferPresetNoteInput.value = currentBufferDraft.note || "";
-  el.bufferTotalVolumeInput.value = currentBufferDraft.totalVolume?.amount || "";
-  el.bufferTotalVolumeUnit.value = currentBufferDraft.totalVolume?.unit || "mL";
-  el.bufferDiluentNameInput.value = currentBufferDraft.diluentName || "ddH2O";
-  clearChildren(el.bufferComponentTableBody);
-
-  if (!currentBufferDraft.components.length) {
-    setTableMessage(el.bufferComponentTableBody, 4, "성분을 추가하면 preset으로 저장할 수 있습니다.");
-    return;
-  }
-
-  currentBufferDraft.components.forEach((component, index) => {
-    const row = document.createElement("tr");
-    const nameCell = document.createElement("td");
-    const typeCell = document.createElement("td");
-    const amountCell = document.createElement("td");
-    const actionCell = document.createElement("td");
-    const removeButton = document.createElement("button");
-
-    nameCell.textContent = component.name;
-    typeCell.textContent = bufferTypeLabel(component.type);
-    amountCell.textContent =
-      component.type === "solution"
-        ? `${bufferComponentAddLabel(component, currentBufferDraft)} (${bufferComponentInputLabel(component)})`
-        : bufferComponentInputLabel(component);
-    removeButton.type = "button";
-    removeButton.className = "secondary-button table-button";
-    removeButton.textContent = "삭제";
-    removeButton.addEventListener("click", () => {
-      currentBufferDraft.components.splice(index, 1);
-      renderBufferDraft();
-      updateBufferRecipe();
-    });
-
-    actionCell.append(removeButton);
-    row.append(nameCell, typeCell, amountCell, actionCell);
-    el.bufferComponentTableBody.append(row);
-  });
-}
-
-function loadSelectedBufferDraft() {
-  const recipe = findBufferRecipe(el.bufferPresetSelect.value);
-  currentBufferDraft = recipe ? cloneRecipe(recipe) : newBufferDraft();
-  renderBufferDraft();
-  updateBufferRecipe();
-}
-
-function updateBufferComponentTypeFields() {
-  const isSolution = el.bufferComponentTypeSelect.value === "solution";
-  el.bufferPowderFields.forEach((field) => {
-    field.hidden = isSolution;
-  });
-  el.bufferSolutionFields.forEach((field) => {
-    field.hidden = !isSolution;
-  });
-}
-
-function addBufferComponent() {
-  if (!currentBufferDraft) {
-    currentBufferDraft = newBufferDraft();
-  }
-  syncBufferDraftMeta();
-
-  const name = el.bufferComponentNameInput.value.trim();
-  const type = el.bufferComponentTypeSelect.value;
-
-  if (!name) {
-    el.bufferNote.textContent = "성분 이름을 입력하세요.";
-    return;
-  }
-
-  if (type === "powder") {
-    const amount = numberValue(el.bufferPowderAmountInput);
-    const unit = el.bufferPowderAmountUnit.value;
-    if (!amount) {
-      el.bufferNote.textContent = "Powder amount를 입력하세요.";
-      return;
-    }
-    currentBufferDraft.components.push({ name, type, amount, unit });
-    el.bufferPowderAmountInput.value = "";
-    el.bufferNote.textContent = `${name} ${formatNumber(amount, 5)} ${unit}를 draft에 추가했습니다.`;
-  } else {
-    const stockConc = numberValue(el.bufferStockConcInput);
-    const targetConc = numberValue(el.bufferTargetConcInput);
-    const stockUnit = el.bufferStockConcUnit.value;
-    const targetUnit = el.bufferTargetConcUnit.value;
-    const stockBase = stockConc ? stockConc * bufferConcentrationFactors[stockUnit] : null;
-    const targetBase = targetConc ? targetConc * bufferConcentrationFactors[targetUnit] : null;
-
-    if (!stockConc || !targetConc) {
-      el.bufferNote.textContent = "Stock concentration과 target concentration을 입력하세요.";
-      return;
-    }
-    if (targetBase > stockBase) {
-      el.bufferNote.textContent = "Target concentration은 stock concentration보다 낮아야 합니다.";
-      return;
-    }
-    if (!bufferTotalVolumeLiters()) {
-      el.bufferNote.textContent = "Stock solution 부피 계산을 위해 total volume을 입력하세요.";
-      return;
-    }
-
-    const component = { name, type, stockConc, stockUnit, targetConc, targetUnit };
-    currentBufferDraft.components.push(component);
-    el.bufferStockConcInput.value = "";
-    el.bufferTargetConcInput.value = "";
-    el.bufferNote.textContent = `${name} ${bufferComponentAddLabel(component)}를 draft에 추가했습니다.`;
-  }
-
-  el.bufferComponentNameInput.value = "";
-  renderBufferDraft();
-}
-
-function bufferSolutionVolumeSum(recipe) {
-  return recipe.components.reduce((sum, component) => {
-    if (component.type !== "solution") return sum;
-    const liters = bufferSolutionVolumeLiters(component, recipe);
-    return Number.isFinite(liters) ? sum + liters : sum;
-  }, 0);
-}
-
-function bufferDiluentAddLabel(recipe) {
-  const totalLiters = bufferTotalVolumeLiters(recipe);
-  if (!totalLiters) return "q.s. to total volume";
-  const solutionLiters = bufferSolutionVolumeSum(recipe);
-  const diluentLiters = totalLiters - solutionLiters;
-  if (diluentLiters < 0) return "solution volume exceeds total";
-  return `${bufferVolumeLabel(diluentLiters, recipe.totalVolume.unit)} or q.s. to ${bufferTotalVolumeLabel(recipe)}`;
-}
-
-function bufferHasOverfilledSolution(recipe) {
-  const totalLiters = bufferTotalVolumeLiters(recipe);
-  return totalLiters ? bufferSolutionVolumeSum(recipe) > totalLiters : false;
-}
-
-function saveBufferPreset() {
-  if (!currentBufferDraft) return;
-  syncBufferDraftMeta();
-
-  const name = currentBufferDraft.name;
-  if (!name || !currentBufferDraft.components.length) {
-    el.bufferNote.textContent = "Preset name과 하나 이상의 성분을 입력하세요.";
-    return;
-  }
-
-  if (!currentBufferDraft.totalVolume.amount) {
-    el.bufferNote.textContent = "Total volume을 입력하세요.";
-    return;
-  }
-
-  if (bufferHasOverfilledSolution(currentBufferDraft)) {
-    el.bufferNote.textContent = "Stock solution 부피 합계가 total volume보다 큽니다.";
-    return;
-  }
-
-  const existingDraft = customBufferRecipes.some((recipe) => recipe.id === currentBufferDraft.id);
-  const id = existingDraft ? currentBufferDraft.id : recipeIdFromName(name);
-  const saved = {
-    id,
-    name,
-    note: currentBufferDraft.note,
-    source: "custom",
-    totalVolume: cloneRecipe(currentBufferDraft.totalVolume),
-    diluentName: currentBufferDraft.diluentName,
-    components: cloneRecipe(currentBufferDraft.components),
-  };
-
-  const existingIndex = customBufferRecipes.findIndex((recipe) => recipe.id === id);
-  if (existingIndex >= 0) {
-    customBufferRecipes[existingIndex] = saved;
-  } else {
-    customBufferRecipes.push(saved);
-  }
-
-  currentBufferDraft = cloneRecipe(saved);
-  saveCustomBufferRecipes();
-  populateBufferPresets();
-  el.bufferPresetSelect.value = saved.id;
-  renderBufferDraft();
-  updateBufferRecipe();
-  el.bufferNote.textContent = `${saved.name} preset을 저장했습니다.`;
-}
-
-function deleteBufferPreset() {
-  const selectedId = el.bufferPresetSelect.value;
-  const selected = customBufferRecipes.find((recipe) => recipe.id === selectedId);
-  if (!selected) {
-    el.bufferNote.textContent = "삭제할 저장 preset을 선택하세요.";
-    return;
-  }
-
-  customBufferRecipes = customBufferRecipes.filter((recipe) => recipe.id !== selectedId);
-  saveCustomBufferRecipes();
-  populateBufferPresets();
-  currentBufferDraft = newBufferDraft();
-  renderBufferDraft();
-  updateBufferRecipe();
-  el.bufferNote.textContent = `${selected.name} preset을 삭제했습니다.`;
-}
-
-function updateBufferRecipe() {
-  const recipe = findBufferRecipe(el.bufferPresetSelect.value);
-
-  if (!recipe) {
-    setTableMessage(el.bufferTableBody, 3, "저장된 preset이 없습니다. 아래에서 새 preset을 추가하세요.");
-    el.bufferNote.textContent = "";
-    return;
-  }
-
-  clearChildren(el.bufferTableBody);
-  recipe.components.forEach((component) => {
-    const row = document.createElement("tr");
-    [component.name, bufferTypeLabel(component.type), bufferComponentAddLabel(component, recipe)].forEach((value) => {
-      const cell = document.createElement("td");
-      cell.textContent = value;
-      row.append(cell);
-    });
-    el.bufferTableBody.append(row);
-  });
-
-  const diluentRow = document.createElement("tr");
-  [
-    recipe.diluentName || "ddH2O",
-    "Diluent",
-    bufferDiluentAddLabel(recipe),
-  ].forEach((value) => {
-    const cell = document.createElement("td");
-    cell.textContent = value;
-    diluentRow.append(cell);
-  });
-  el.bufferTableBody.append(diluentRow);
-  const solutionWarning = bufferHasOverfilledSolution(recipe) ? " Stock solution 부피 합계가 total volume보다 큽니다." : "";
-  el.bufferNote.textContent = `${recipe.note || ""}${solutionWarning}`;
-}
-
-function registerServiceWorker() {
-  if ("serviceWorker" in navigator && ["http:", "https:"].includes(location.protocol)) {
-    navigator.serviceWorker.register("service-worker.js");
-  }
-}
-
-window.addEventListener("beforeinstallprompt", (event) => {
-  event.preventDefault();
-  deferredInstallPrompt = event;
-  el.installButton.hidden = false;
-});
-
-el.installButton.addEventListener("click", async () => {
-  if (!deferredInstallPrompt) return;
-  deferredInstallPrompt.prompt();
-  await deferredInstallPrompt.userChoice;
-  deferredInstallPrompt = null;
-  el.installButton.hidden = true;
-});
-
-el.toolTabs.forEach((tab) => {
-  tab.addEventListener("click", () => switchTool(tab.dataset.toolTab));
-});
-
-el.dogmaModeButtons.forEach((button) => {
-  button.addEventListener("click", () => setActiveDogmaMode(button.dataset.dogmaMode));
-});
-el.dogmaInput.addEventListener("input", updateDogma);
-el.copyDogmaOutputButton.addEventListener("click", copyDogmaOutput);
-el.clearDogmaButton.addEventListener("click", () => {
-  el.dogmaInput.value = "";
-  updateDogma();
-});
-
-el.segments.forEach((button) => {
-  button.addEventListener("click", () => {
-    setActiveMolecule(button.dataset.molecule);
+function bindEvents() {
+  el.toolTabs.forEach((tab) => tab.addEventListener("click", () => switchTool(tab.dataset.toolTab)));
+  el.moleculeButtons.forEach((button) => button.addEventListener("click", () => setActiveMolecule(button.dataset.molecule)));
+  el.sequenceInput.addEventListener("input", updateSequence);
+  el.clearSequenceButton.addEventListener("click", () => {
+    el.sequenceInput.value = "";
     updateSequence();
   });
-});
-
-el.proteinSearchButton.addEventListener("click", searchProteinByName);
-el.clearProteinSearchButton.addEventListener("click", () => {
-  el.proteinSearchInput.value = "";
-  el.organismSearchInput.value = "human";
-  el.proteinSearchStatus.textContent = "검색 결과를 선택하면 MW가 계산기에 들어갑니다.";
-  clearChildren(el.proteinSearchResults);
-});
-el.proteinSearchInput.addEventListener("keydown", (event) => {
-  if (event.key === "Enter") searchProteinByName();
-});
-el.organismSearchInput.addEventListener("keydown", (event) => {
-  if (event.key === "Enter") searchProteinByName();
-});
-
-el.sequenceInput.addEventListener("input", updateSequence);
-el.clearSequenceButton.addEventListener("click", () => {
-  el.sequenceInput.value = "";
-  updateSequence();
-});
-
-[
-  el.solveFor,
-  el.massInput,
-  el.massUnit,
-  el.mwInput,
-  el.volumeInput,
-  el.volumeUnit,
-  el.concentrationInput,
-  el.concentrationUnit,
-].forEach((input) => input.addEventListener("input", updateMolarity));
-
-[el.ngUlInput, el.conversionMwInput, el.nucleicTargetVolumeInput, el.nucleicTargetVolumeUnit].forEach((input) => {
-  input.addEventListener("input", updateConversion);
-});
-
-[
-  el.proteinConcInput,
-  el.proteinConcUnit,
-  el.proteinMwInput,
-  el.proteinTargetVolumeInput,
-  el.proteinTargetVolumeUnit,
-].forEach((input) => input.addEventListener("input", updateProteinMassMole));
-
-el.dilutionFinalVolumeInput.addEventListener("input", updateDilutionTable);
-el.dilutionVolumeUnit.addEventListener("input", updateDilutionTable);
-el.addDilutionMaterialButton.addEventListener("click", addDilutionMaterial);
-el.clearDilutionMaterialsButton.addEventListener("click", () => {
-  dilutionMaterials = [];
-  el.dilutionNote.textContent = "Material 목록을 지웠습니다.";
-  updateDilutionTable();
-});
-[el.dilutionMaterialInput, el.dilutionRatioInput].forEach((input) => {
-  input.addEventListener("keydown", (event) => {
-    if (event.key === "Enter") addDilutionMaterial();
+  el.useMwButton.addEventListener("click", useMwInCalculators);
+  el.proteinSearchButton.addEventListener("click", searchProteinByName);
+  el.clearProteinSearchButton.addEventListener("click", () => {
+    el.proteinSearchInput.value = "";
+    clearChildren(el.proteinSearchResults);
+    el.proteinSearchStatus.textContent = "Select a result to fill MW fields across v2.";
   });
-});
 
-el.bufferPresetSelect.addEventListener("change", loadSelectedBufferDraft);
-el.bufferComponentTypeSelect.addEventListener("input", updateBufferComponentTypeFields);
-el.bufferComponentTypeSelect.addEventListener("change", updateBufferComponentTypeFields);
-el.addBufferComponentButton.addEventListener("click", addBufferComponent);
-el.saveBufferPresetButton.addEventListener("click", saveBufferPreset);
-el.deleteBufferPresetButton.addEventListener("click", deleteBufferPreset);
-el.bufferPresetNameInput.addEventListener("input", () => {
-  if (currentBufferDraft) currentBufferDraft.name = el.bufferPresetNameInput.value.trim();
-});
-el.bufferPresetNoteInput.addEventListener("input", () => {
-  if (currentBufferDraft) {
-    currentBufferDraft.note = el.bufferPresetNoteInput.value.trim();
-  }
-});
-[el.bufferPresetNameInput, el.bufferPresetNoteInput, el.bufferTotalVolumeInput, el.bufferTotalVolumeUnit, el.bufferDiluentNameInput].forEach((input) => {
-  input.addEventListener("input", syncBufferDraftMeta);
-});
+  el.solveButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      solveFor = button.dataset.solveFor;
+      setActiveButtons(el.solveButtons, "solveFor", solveFor);
+      updateMolarity();
+    });
+  });
+  [el.massInput, el.massUnit, el.mwInput, el.volumeInput, el.volumeUnit, el.concentrationInput, el.concentrationUnit].forEach((node) => {
+    node.addEventListener("input", updateMolarity);
+    node.addEventListener("change", updateMolarity);
+  });
 
-el.presetButtons.forEach((button) => {
-  button.addEventListener("click", () => applyPreset(button.dataset.preset));
-});
+  el.concentrationModeButtons.forEach((button) => {
+    button.addEventListener("click", () => switchMode(el.concentrationModeButtons, el.concentrationPanels, "concentrationMode", "concentrationPanel", button.dataset.concentrationMode));
+  });
+  [el.rnaConcInput, el.rnaConcUnit, el.rnaMwInput, el.rnaVolumeInput, el.rnaVolumeUnit].forEach((node) => {
+    node.addEventListener("input", updateRnaConversion);
+    node.addEventListener("change", updateRnaConversion);
+  });
+  el.rnaPresetButtons.forEach((button) => button.addEventListener("click", () => applyRnaPreset(button.dataset.rnaPreset)));
+  el.rnaLengthInput.addEventListener("input", updateRnaConversion);
+  [el.proteinConcInput, el.proteinConcUnit, el.proteinMwInput].forEach((node) => {
+    node.addEventListener("input", updateProteinConversion);
+    node.addEventListener("change", updateProteinConversion);
+  });
 
-loadCustomBufferRecipes();
-populateBufferPresets();
-loadSelectedBufferDraft();
-updateBufferComponentTypeFields();
-switchTool("molecular");
-updateSequence();
-updateMolarity();
-updateConversion();
-updateProteinMassMole();
-updateDilutionTable();
-updateDogma();
-registerServiceWorker();
+  el.dilutionModeButtons.forEach((button) => {
+    button.addEventListener("click", () => switchMode(el.dilutionModeButtons, el.dilutionPanels, "dilutionMode", "dilutionPanel", button.dataset.dilutionMode));
+  });
+  [el.foldStockInput, el.foldTargetInput, el.foldFinalVolumeInput, el.foldVolumeUnit].forEach((node) => {
+    node.addEventListener("input", updateFoldDilution);
+    node.addEventListener("change", updateFoldDilution);
+  });
+  [el.molarStockInput, el.molarStockUnit, el.molarTargetInput, el.molarTargetUnit, el.molarFinalVolumeInput, el.molarVolumeUnit].forEach((node) => {
+    node.addEventListener("input", updateMolarDilution);
+    node.addEventListener("change", updateMolarDilution);
+  });
+  [el.rnaStockInput, el.rnaStockUnit, el.rnaTargetInput, el.rnaTargetUnit, el.rnaDilutionMwInput, el.rnaDilutionVolumeInput, el.rnaDilutionVolumeUnit].forEach((node) => {
+    node.addEventListener("input", updateRnaDilution);
+    node.addEventListener("change", updateRnaDilution);
+  });
+  [el.proteinStockInput, el.proteinStockUnit, el.proteinTargetInput, el.proteinTargetUnit, el.proteinDilutionMwInput, el.proteinDilutionVolumeInput, el.proteinDilutionVolumeUnit].forEach((node) => {
+    node.addEventListener("input", updateProteinDilution);
+    node.addEventListener("change", updateProteinDilution);
+  });
+
+  el.bufferModeButtons.forEach((button) => {
+    button.addEventListener("click", () => switchMode(el.bufferModeButtons, el.bufferPanels, "bufferMode", "bufferPanel", button.dataset.bufferMode));
+  });
+  el.bufferPresetSelect.addEventListener("change", renderBufferRecipe);
+  el.bufferComponentTypeSelect.addEventListener("change", updateBufferComponentTypeFields);
+  el.addBufferComponentButton.addEventListener("click", addBufferComponent);
+  el.saveBufferPresetButton.addEventListener("click", saveBufferPreset);
+  el.deleteBufferPresetButton.addEventListener("click", deleteBufferPreset);
+
+  el.dogmaModeButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      dogmaMode = button.dataset.dogmaMode;
+      setActiveButtons(el.dogmaModeButtons, "dogmaMode", dogmaMode);
+      updateDogma();
+    });
+  });
+  el.dogmaInput.addEventListener("input", updateDogma);
+  el.copyDogmaOutputButton.addEventListener("click", copyDogmaOutput);
+  el.clearDogmaButton.addEventListener("click", () => {
+    el.dogmaInput.value = "";
+    el.dogmaOutput.value = "";
+    updateDogma();
+  });
+}
+
+function init() {
+  bindEvents();
+  loadCustomBufferRecipes();
+  currentBufferDraft = newBufferDraft();
+  populateBufferPresets();
+  renderBufferRecipe();
+  renderBufferDraft();
+  updateBufferComponentTypeFields();
+  updateSequence();
+  updateMolarity();
+  updateRnaConversion();
+  updateProteinConversion();
+  updateFoldDilution();
+  updateMolarDilution();
+  updateRnaDilution();
+  updateProteinDilution();
+  updateDogma();
+}
+
+init();

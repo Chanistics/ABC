@@ -3,625 +3,676 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#0f766e" />
+    <meta name="theme-color" content="#f4f1ea" />
     <meta
       name="description"
-      content="실험에 자주 사용되는 기능을 하나로!"
+      content="ABC v2: molecular weight, concentration, dilution, buffer, and sequence calculator"
     />
-    <link rel="manifest" href="manifest.webmanifest" />
-    <link rel="apple-touch-icon" href="icons/icon-192.png" />
     <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="styles.css?v=19" />
-    <title>ABC: Advanced Bench Calculator</title>
+    <link rel="stylesheet" href="styles.css" />
+    <title>ABC v2: Advanced Bench Calculator</title>
   </head>
   <body>
     <div class="app-shell">
-      <header class="topbar">
-        <div class="brand">
-          <img src="icons/icon.svg" alt="" class="brand-mark" />
-          <div>
-            <h1>ABC: Advanced Bench Calculator</h1>
-            <p>실험에 자주 사용되는 기능을 하나로!</p>
-          </div>
-        </div>
-        <button class="ghost-button" id="installButton" type="button" hidden>
-          설치
-        </button>
+      <header class="site-header">
+        <a class="brand" href="#mw" aria-label="ABC v2 home">
+          <img src="icons/icon.svg" alt="" />
+          <span>
+            <strong>ABC</strong>
+            <small>Advanced Bench Calculator v2</small>
+          </span>
+        </a>
+        <nav class="primary-nav" aria-label="Calculator tools">
+          <button class="nav-link is-active" type="button" data-tool-tab="mw">
+            <span class="nav-title">Molecular Weight</span>
+            <span class="nav-meta">Sequence / UniProt</span>
+          </button>
+          <button class="nav-link" type="button" data-tool-tab="mass">
+            <span class="nav-title">Mass Calculator</span>
+            <span class="nav-meta">Mass / volume / MW</span>
+          </button>
+          <button class="nav-link" type="button" data-tool-tab="concentration">
+            <span class="nav-title">Concentration</span>
+            <span class="nav-meta">RNA / protein</span>
+          </button>
+          <button class="nav-link" type="button" data-tool-tab="dilution">
+            <span class="nav-title">Dilution Planner</span>
+            <span class="nav-meta">Stock to target</span>
+          </button>
+          <button class="nav-link" type="button" data-tool-tab="buffer">
+            <span class="nav-title">Buffer Recipe</span>
+            <span class="nav-meta">Custom presets</span>
+          </button>
+          <button class="nav-link" type="button" data-tool-tab="sequence">
+            <span class="nav-title">Sequence Tools</span>
+            <span class="nav-meta">Dogma utilities</span>
+          </button>
+        </nav>
       </header>
 
-      <nav class="tool-tabs" aria-label="Calculator tools">
-        <button class="tool-tab active" type="button" data-tool-tab="molecular">Molecular Weight</button>
-        <button class="tool-tab" type="button" data-tool-tab="mass">Mass Calculator</button>
-        <button class="tool-tab" type="button" data-tool-tab="converter">Concentration Convertor</button>
-        <button class="tool-tab" type="button" data-tool-tab="dilution">Convenient Dilution</button>
-        <button class="tool-tab" type="button" data-tool-tab="buffer">Buffer Recipe</button>
-        <button class="tool-tab" type="button" data-tool-tab="dogma">Central Dogma</button>
-      </nav>
+      <main>
+        <section class="hero" aria-labelledby="heroTitle">
+          <p class="eyebrow">bench-side calculator</p>
+          <h1 id="heroTitle">ABC v2</h1>
+          <p>
+            RNA, protein, stock dilution, buffer recipe, and sequence calculations arranged by the
+            step you actually need at the bench.
+          </p>
+        </section>
 
-      <main class="tool-panels">
-        <section class="tool-section tool-panel active" data-tool-panel="molecular" aria-labelledby="sequenceTitle">
-          <div class="section-heading">
+        <section class="tool-panel is-active" data-tool-panel="mw" aria-labelledby="mwTitle">
+          <div class="panel-head">
             <div>
-              <h2 id="sequenceTitle">Molecular Weight</h2>
-              <p>서열 계산 또는 UniProt 단백질 검색으로 MW를 가져옵니다.</p>
+              <p class="eyebrow">molecular weight</p>
+              <h2 id="mwTitle">MW from sequence or UniProt</h2>
             </div>
-            <div class="segmented" role="tablist" aria-label="Molecule type">
-              <button class="segment active" type="button" data-molecule="protein">Protein</button>
+            <div class="segmented" aria-label="Molecule type">
+              <button class="segment is-active" type="button" data-molecule="protein">Protein</button>
               <button class="segment" type="button" data-molecule="rna">RNA</button>
               <button class="segment" type="button" data-molecule="dna">DNA</button>
             </div>
           </div>
 
-          <div class="search-panel" aria-label="Protein name search">
-            <div class="input-grid search-grid">
-              <label class="field">
-                <span>Protein name</span>
-                <input id="proteinSearchInput" type="search" placeholder="예: EGFR, GFP, insulin" />
-              </label>
-              <label class="field">
-                <span>Organism</span>
-                <input id="organismSearchInput" type="search" placeholder="예: human, mouse" value="human" />
-              </label>
-            </div>
-            <div class="inline-actions">
-              <button class="primary-button" id="proteinSearchButton" type="button">UniProt 검색</button>
-              <button class="secondary-button" id="clearProteinSearchButton" type="button">검색 지우기</button>
-            </div>
-            <p class="note" id="proteinSearchStatus">검색 결과를 선택하면 MW가 계산기에 들어갑니다.</p>
-            <div class="search-results" id="proteinSearchResults" aria-live="polite"></div>
-          </div>
-
-          <label class="field textarea-field">
-            <span>Sequence</span>
-            <textarea
-              id="sequenceInput"
-              spellcheck="false"
-              placeholder="예: MVLSPADKTNVKAAW 또는 AUGCUACG..."
-            ></textarea>
-          </label>
-
-          <div class="result-grid">
-            <output class="metric" id="mwOutput">
-              <span class="metric-label">Molecular Weight</span>
-              <strong>-</strong>
-              <span class="metric-unit">g/mol</span>
-            </output>
-            <output class="metric" id="lengthOutput">
-              <span class="metric-label">Length</span>
-              <strong>-</strong>
-              <span class="metric-unit">residues / nt</span>
-            </output>
-            <output class="metric" id="gcOutput">
-              <span class="metric-label">GC</span>
-              <strong>-</strong>
-              <span class="metric-unit">%</span>
-            </output>
-          </div>
-
-          <div class="inline-actions">
-            <button class="secondary-button" id="clearSequenceButton" type="button">서열 지우기</button>
-          </div>
-
-          <p class="note" id="sequenceNote">
-            Protein은 평균 residue mass에 H2O를 더합니다. RNA/DNA는 single-stranded oligo 기준입니다.
-          </p>
-        </section>
-
-        <section class="tool-section tool-panel" data-tool-panel="mass" aria-labelledby="molarityTitle" hidden>
-          <div class="section-heading compact">
-            <div>
-              <h2 id="molarityTitle">Mass Calculator</h2>
-              <p>세 값을 입력하고 구할 값을 선택하세요.</p>
-            </div>
-          </div>
-
-          <div class="solve-row">
-            <label class="field">
-              <span>구할 값</span>
-              <select id="solveFor">
-                <option value="concentration">Molarity</option>
-                <option value="mass">Mass</option>
-                <option value="volume">Volume</option>
-                <option value="mw">Molecular Weight</option>
-              </select>
-            </label>
-          </div>
-
-          <div class="input-grid">
-            <label class="field" data-solve-field="mass">
-              <span>Mass</span>
-              <div class="with-unit">
-                <input id="massInput" type="number" inputmode="decimal" min="0" step="any" placeholder="10" />
-                <select id="massUnit" aria-label="Mass unit">
-                  <option value="g">g</option>
-                  <option value="mg">mg</option>
-                  <option value="ug" selected>ug</option>
-                  <option value="ng">ng</option>
-                  <option value="pg">pg</option>
-                </select>
-              </div>
-            </label>
-
-            <label class="field" data-solve-field="mw">
-              <span>Molecular Weight</span>
-              <div class="with-unit single-unit">
-                <input id="mwInput" type="number" inputmode="decimal" min="0" step="any" placeholder="50000" />
-                <span>g/mol</span>
-              </div>
-            </label>
-
-            <label class="field" data-solve-field="volume">
-              <span>Volume</span>
-              <div class="with-unit">
-                <input id="volumeInput" type="number" inputmode="decimal" min="0" step="any" placeholder="100" />
-                <select id="volumeUnit" aria-label="Volume unit">
-                  <option value="L">L</option>
-                  <option value="mL">mL</option>
-                  <option value="uL" selected>uL</option>
-                  <option value="nL">nL</option>
-                </select>
-              </div>
-            </label>
-
-            <label class="field" data-solve-field="concentration">
-              <span>Molarity</span>
-              <div class="with-unit">
-                <input id="concentrationInput" type="number" inputmode="decimal" min="0" step="any" placeholder="2" />
-                <select id="concentrationUnit" aria-label="Molarity unit">
-                  <option value="M">M</option>
-                  <option value="mM">mM</option>
-                  <option value="uM" selected>uM</option>
-                  <option value="nM">nM</option>
-                  <option value="pM">pM</option>
-                </select>
-              </div>
-            </label>
-          </div>
-
-          <output class="answer" id="molarityAnswer">
-            입력값을 채우면 결과가 표시됩니다.
-          </output>
-        </section>
-
-        <section class="tool-section tool-panel" data-tool-panel="converter" aria-labelledby="conversionTitle" hidden>
-          <div class="section-heading compact">
-            <div>
-              <h2 id="conversionTitle">Concentration Convertor</h2>
-              <p>RNA/DNA ng/uL와 protein mass concentration을 molar concentration으로 변환합니다.</p>
-            </div>
-          </div>
-
-          <h3 class="subsection-title">Nucleic Acid</h3>
-          <div class="input-grid conversion-grid">
-            <label class="field">
-              <span>농도</span>
-              <div class="with-unit single-unit">
-                <input id="ngUlInput" type="number" inputmode="decimal" min="0" step="any" placeholder="50" />
-                <span>ng/uL</span>
-              </div>
-            </label>
-
-            <label class="field">
-              <span>MW</span>
-              <div class="with-unit single-unit">
-                <input id="conversionMwInput" type="number" inputmode="decimal" min="0" step="any" placeholder="6600" />
-                <span>g/mol</span>
-              </div>
-            </label>
-
-            <label class="field">
-              <span>Volume for pmol</span>
-              <div class="with-unit">
-                <input id="nucleicTargetVolumeInput" type="number" inputmode="decimal" min="0" step="any" placeholder="100" />
-                <select id="nucleicTargetVolumeUnit" aria-label="Nucleic acid target volume unit">
-                  <option value="uL" selected>uL</option>
-                  <option value="mL">mL</option>
-                  <option value="L">L</option>
-                </select>
-              </div>
-            </label>
-          </div>
-
-          <div class="preset-row" aria-label="MW quick presets">
-            <button type="button" class="chip" data-preset="ssdna">ssDNA 330 x nt</button>
-            <button type="button" class="chip" data-preset="dsdna">dsDNA 660 x bp</button>
-            <button type="button" class="chip" data-preset="rna">RNA 340 x nt</button>
-          </div>
-
-          <label class="field length-field">
-            <span>Preset length</span>
-            <div class="with-unit single-unit">
-              <input id="presetLengthInput" type="number" inputmode="numeric" min="1" step="1" placeholder="20" />
-              <span>nt / bp</span>
-            </div>
-          </label>
-
-          <div class="result-grid nucleic-result-grid">
-            <output class="metric" id="nucleicNgUlOutput">
-              <span class="metric-label">ng/uL</span>
-              <strong>-</strong>
-              <span class="metric-unit">mass concentration</span>
-            </output>
-            <output class="metric" id="nMOutput">
-              <span class="metric-label">nM</span>
-              <strong>-</strong>
-              <span class="metric-unit">nmol/L</span>
-            </output>
-            <output class="metric" id="uMOutput">
-              <span class="metric-label">uM = pmol/uL</span>
-              <strong>-</strong>
-              <span class="metric-unit">umol/L, pmol/uL</span>
-            </output>
-            <output class="metric" id="nucleicPmolOutput">
-              <span class="metric-label">pmol</span>
-              <strong>-</strong>
-              <span class="metric-unit">amount in volume</span>
-            </output>
-          </div>
-
-          <output class="answer" id="nucleicAnswer">
-            값을 입력하면 결과값이 표시됩니다.
-          </output>
-
-          <div class="section-divider"></div>
-          <h3 class="subsection-title" id="proteinMassTitle">Protein</h3>
-
-          <div class="input-grid">
-            <label class="field">
-              <span>Input</span>
-              <div class="with-unit">
-                <input id="proteinConcInput" type="number" inputmode="decimal" min="0" step="any" placeholder="1" />
-                <select id="proteinConcUnit" aria-label="Protein concentration unit">
-                  <option value="mgmL" selected>mg/mL</option>
-                  <option value="ugmL">ug/mL</option>
-                  <option value="ngUl">ng/uL</option>
-                  <option value="uM">uM</option>
-                  <option value="nM">nM</option>
-                  <option value="pM">pM</option>
-                  <option value="pmol">pmol</option>
-                </select>
-              </div>
-            </label>
-
-            <label class="field">
-              <span>MW</span>
-              <div class="with-unit single-unit">
-                <input id="proteinMwInput" type="number" inputmode="decimal" min="0" step="any" placeholder="50000" />
-                <span>g/mol</span>
-              </div>
-            </label>
-
-            <label class="field">
-              <span>Volume for pmol</span>
-              <div class="with-unit">
-                <input id="proteinTargetVolumeInput" type="number" inputmode="decimal" min="0" step="any" placeholder="100" />
-                <select id="proteinTargetVolumeUnit" aria-label="Protein target volume unit">
-                  <option value="uL" selected>uL</option>
-                  <option value="mL">mL</option>
-                  <option value="L">L</option>
-                </select>
-              </div>
-            </label>
-          </div>
-
-          <div class="result-grid protein-result-grid">
-            <output class="metric" id="proteinMgMlOutput">
-              <span class="metric-label">mg/mL</span>
-              <strong>-</strong>
-              <span class="metric-unit">mass concentration</span>
-            </output>
-            <output class="metric" id="proteinNgUlOutput">
-              <span class="metric-label">ng/uL</span>
-              <strong>-</strong>
-              <span class="metric-unit">mass concentration</span>
-            </output>
-            <output class="metric" id="proteinUMOutput">
-              <span class="metric-label">uM</span>
-              <strong>-</strong>
-              <span class="metric-unit">molarity</span>
-            </output>
-            <output class="metric" id="proteinPMOutput">
-              <span class="metric-label">pM</span>
-              <strong>-</strong>
-              <span class="metric-unit">molarity</span>
-            </output>
-            <output class="metric" id="proteinPmolOutput">
-              <span class="metric-label">pmol</span>
-              <strong>-</strong>
-              <span class="metric-unit">amount in volume</span>
-            </output>
-          </div>
-
-          <output class="answer" id="proteinMassAnswer">
-            값을 입력하면 결과값이 표시됩니다.
-          </output>
-        </section>
-
-        <section class="tool-section tool-panel" data-tool-panel="dilution" aria-labelledby="dilutionTitle" hidden>
-          <div class="section-heading compact">
-            <div>
-              <h2 id="dilutionTitle">Convenient Dilution</h2>
-              <p>최종 부피와 1:X 조건으로 material과 diluent 부피를 계산합니다.</p>
-            </div>
-          </div>
-
-          <div class="input-grid">
-            <label class="field">
-              <span>Final volume</span>
-              <div class="with-unit">
-                <input id="dilutionFinalVolumeInput" type="number" inputmode="decimal" min="0" step="any" placeholder="1000" />
-                <select id="dilutionVolumeUnit" aria-label="Dilution volume unit">
-                  <option value="uL" selected>uL</option>
-                  <option value="mL">mL</option>
-                  <option value="L">L</option>
-                </select>
-              </div>
-            </label>
-          </div>
-
-          <div class="buffer-builder">
-            <div class="component-form dilution-form">
-              <label class="field">
-                <span>Material</span>
-                <input id="dilutionMaterialInput" type="text" placeholder="예: A, antibody, enzyme" />
-              </label>
-
-              <label class="field">
-                <span>1:X</span>
-                <input id="dilutionRatioInput" type="number" inputmode="decimal" min="1" step="any" placeholder="1000" />
-              </label>
-            </div>
-
-            <div class="inline-actions">
-              <button class="primary-button" id="addDilutionMaterialButton" type="button">Material 추가</button>
-              <button class="secondary-button" id="clearDilutionMaterialsButton" type="button">전체 지우기</button>
-            </div>
-          </div>
-
-          <div class="result-grid two-up dilution-result-grid">
-            <output class="metric" id="dilutionTotalMaterialOutput">
-              <span class="metric-label">Total material</span>
-              <strong>-</strong>
-              <span class="metric-unit">sum of all materials</span>
-            </output>
-            <output class="metric" id="dilutionDiluentOutput">
-              <span class="metric-label">Diluent</span>
-              <strong>-</strong>
-              <span class="metric-unit">final volume - materials</span>
-            </output>
-          </div>
-
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Material</th>
-                  <th>Dilution</th>
-                  <th>Material volume</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody id="dilutionTableBody">
-                <tr><td colspan="4">Material과 1:X를 추가하면 계산됩니다.</td></tr>
-              </tbody>
-            </table>
-          </div>
-          <output class="answer" id="dilutionSummary">
-            여러 material을 추가하면 각 material 부피를 합산한 뒤 남은 부피를 diluent로 계산합니다.
-          </output>
-          <p class="note" id="dilutionNote">예: final 1000 uL, A 1:1000, B 1:100 → A 1 uL + B 10 uL + diluent 989 uL.</p>
-        </section>
-
-        <section class="tool-section tool-panel buffer-tool" data-tool-panel="buffer" aria-labelledby="bufferTitle" hidden>
-          <div class="section-heading compact">
-            <div>
-              <h2 id="bufferTitle">Buffer Recipe</h2>
-              <p>자주 쓰는 buffer 조성을 직접 저장하고 필요한 조성을 바로 확인합니다.</p>
-            </div>
-          </div>
-
-          <h3 class="subsection-title">Preset 보기</h3>
-          <div class="input-grid">
-            <label class="field">
-              <span>Preset</span>
-              <select id="bufferPresetSelect"></select>
-            </label>
-          </div>
-          <div class="inline-actions">
-            <button class="secondary-button" id="deleteBufferPresetButton" type="button">저장 preset 삭제</button>
-          </div>
-
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Component</th>
-                  <th>Type</th>
-                  <th>Add</th>
-                </tr>
-              </thead>
-              <tbody id="bufferTableBody">
-                <tr><td colspan="3">저장된 preset이 없습니다. 아래에서 새 preset을 추가하세요.</td></tr>
-              </tbody>
-            </table>
-          </div>
-          <p class="note" id="bufferNote"></p>
-
-          <div class="section-divider"></div>
-          <h3 class="subsection-title">Preset 설정</h3>
-          <div class="buffer-builder">
-            <div class="input-grid">
-              <label class="field">
-                <span>Preset name</span>
-                <input id="bufferPresetNameInput" type="text" placeholder="예: My wash buffer" />
-              </label>
-
-              <label class="field">
-                <span>Note</span>
-                <input id="bufferPresetNoteInput" type="text" placeholder="예: pH 7.4, add inhibitor fresh" />
-              </label>
-
-              <label class="field">
-                <span>Total volume</span>
-                <div class="with-unit">
-                  <input id="bufferTotalVolumeInput" type="number" inputmode="decimal" min="0" step="any" placeholder="100" />
-                  <select id="bufferTotalVolumeUnit" aria-label="Buffer total volume unit">
-                    <option value="mL" selected>mL</option>
-                    <option value="uL">uL</option>
-                  </select>
+          <div class="workbench two-column">
+            <div class="stack">
+              <div class="inline-panel" id="proteinSearchPanel">
+                <div class="input-grid two">
+                  <label class="field">
+                    <span>Protein name</span>
+                    <input id="proteinSearchInput" type="search" placeholder="EGFR, GFP, insulin" />
+                  </label>
+                  <label class="field">
+                    <span>Organism</span>
+                    <input id="organismSearchInput" type="search" placeholder="human, mouse" value="human" />
+                  </label>
                 </div>
-              </label>
+                <div class="actions">
+                  <button class="primary-button" id="proteinSearchButton" type="button">Search UniProt</button>
+                  <button class="secondary-button" id="clearProteinSearchButton" type="button">Clear</button>
+                </div>
+                <p class="note" id="proteinSearchStatus">Select a result to fill MW fields across v2.</p>
+                <div class="search-results" id="proteinSearchResults" aria-live="polite"></div>
+              </div>
 
               <label class="field">
-                <span>Diluent</span>
-                <input id="bufferDiluentNameInput" type="text" placeholder="예: ddH2O, PBS, media" />
+                <span>Sequence</span>
+                <textarea
+                  id="sequenceInput"
+                  spellcheck="false"
+                  placeholder="Paste protein, RNA, or DNA sequence"
+                ></textarea>
               </label>
+
+              <div class="actions">
+                <button class="secondary-button" id="clearSequenceButton" type="button">Clear sequence</button>
+                <button class="primary-button" id="useMwButton" type="button">Use MW in calculators</button>
+              </div>
             </div>
 
-            <div class="component-form">
-              <label class="field">
-                <span>Component</span>
-                <input id="bufferComponentNameInput" type="text" placeholder="NaCl, Tris, 10x stock..." />
-              </label>
+            <aside class="summary-rail" aria-label="MW result">
+              <output class="result-hero" id="mwOutput">
+                <span>molecular weight</span>
+                <strong>-</strong>
+                <small>g/mol</small>
+              </output>
+              <div class="metric-strip">
+                <output class="metric" id="lengthOutput">
+                  <span>Length</span>
+                  <strong>-</strong>
+                  <small>aa / nt</small>
+                </output>
+                <output class="metric" id="gcOutput">
+                  <span>GC</span>
+                  <strong>-</strong>
+                  <small>%</small>
+                </output>
+              </div>
+              <p class="note" id="sequenceNote">Protein uses average residue mass plus H2O.</p>
+            </aside>
+          </div>
+        </section>
 
-              <label class="field">
-                <span>Type</span>
-                <select id="bufferComponentTypeSelect">
-                  <option value="powder">Powder</option>
-                  <option value="solution">Stock solution</option>
-                </select>
-              </label>
+        <section class="tool-panel" data-tool-panel="mass" aria-labelledby="massTitle" hidden>
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">mass and molarity</p>
+              <h2 id="massTitle">Solve one value from the other three</h2>
+            </div>
+            <div class="segmented wide" aria-label="Solve target">
+              <button class="segment is-active" type="button" data-solve-for="concentration">Molarity</button>
+              <button class="segment" type="button" data-solve-for="mass">Mass</button>
+              <button class="segment" type="button" data-solve-for="volume">Volume</button>
+              <button class="segment" type="button" data-solve-for="mw">MW</button>
+            </div>
+          </div>
 
-              <label class="field" data-buffer-powder-field>
-                <span>Powder amount</span>
+          <div class="workbench two-column">
+            <div class="input-grid two">
+              <label class="field" data-solve-field="mass">
+                <span>Mass</span>
                 <div class="with-unit">
-                  <input id="bufferPowderAmountInput" type="number" inputmode="decimal" min="0" step="any" placeholder="10" />
-                  <select id="bufferPowderAmountUnit" aria-label="Buffer powder amount unit">
-                    <option value="mg" selected>mg</option>
+                  <input id="massInput" type="number" inputmode="decimal" min="0" step="any" placeholder="10" />
+                  <select id="massUnit" aria-label="Mass unit">
                     <option value="g">g</option>
+                    <option value="mg">mg</option>
+                    <option value="ug" selected>ug</option>
+                    <option value="ng">ng</option>
+                    <option value="pg">pg</option>
                   </select>
                 </div>
               </label>
-
-              <label class="field" data-buffer-solution-field hidden>
-                <span>Stock concentration</span>
+              <label class="field" data-solve-field="mw">
+                <span>MW</span>
+                <div class="with-unit fixed-unit">
+                  <input id="mwInput" type="number" inputmode="decimal" min="0" step="any" placeholder="50000" />
+                  <span>g/mol</span>
+                </div>
+              </label>
+              <label class="field" data-solve-field="volume">
+                <span>Volume</span>
                 <div class="with-unit">
-                  <input id="bufferStockConcInput" type="number" inputmode="decimal" min="0" step="any" placeholder="1" />
-                  <select id="bufferStockConcUnit" aria-label="Buffer stock concentration unit">
-                    <option value="M" selected>M</option>
-                    <option value="mM">mM</option>
-                    <option value="uM">uM</option>
-                    <option value="nM">nM</option>
-                    <option value="X">X</option>
+                  <input id="volumeInput" type="number" inputmode="decimal" min="0" step="any" placeholder="100" />
+                  <select id="volumeUnit" aria-label="Volume unit">
+                    <option value="L">L</option>
+                    <option value="mL">mL</option>
+                    <option value="uL" selected>uL</option>
+                    <option value="nL">nL</option>
                   </select>
                 </div>
               </label>
-
-              <label class="field" data-buffer-solution-field hidden>
-                <span>Target concentration</span>
+              <label class="field" data-solve-field="concentration">
+                <span>Molarity</span>
                 <div class="with-unit">
-                  <input id="bufferTargetConcInput" type="number" inputmode="decimal" min="0" step="any" placeholder="10" />
-                  <select id="bufferTargetConcUnit" aria-label="Buffer target concentration unit">
+                  <input id="concentrationInput" type="number" inputmode="decimal" min="0" step="any" placeholder="2" />
+                  <select id="concentrationUnit" aria-label="Molarity unit">
                     <option value="M">M</option>
-                    <option value="mM" selected>mM</option>
-                    <option value="uM">uM</option>
+                    <option value="mM">mM</option>
+                    <option value="uM" selected>uM</option>
                     <option value="nM">nM</option>
-                    <option value="X">X</option>
+                    <option value="pM">pM</option>
                   </select>
                 </div>
               </label>
             </div>
+            <aside class="summary-rail">
+              <output class="answer" id="molarityAnswer">Fill the required values.</output>
+            </aside>
+          </div>
+        </section>
 
-            <div class="inline-actions">
-              <button class="primary-button" id="addBufferComponentButton" type="button">성분 추가</button>
+        <section class="tool-panel" data-tool-panel="concentration" aria-labelledby="concentrationTitle" hidden>
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">concentration</p>
+              <h2 id="concentrationTitle">RNA and protein conversions</h2>
             </div>
-
-            <div class="table-wrap compact-table">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Component</th>
-                    <th>Type</th>
-                    <th>Input / Add</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody id="bufferComponentTableBody">
-                  <tr><td colspan="4">성분을 추가하면 preset으로 저장할 수 있습니다.</td></tr>
-                </tbody>
-              </table>
+            <div class="segmented" aria-label="Concentration mode">
+              <button class="segment is-active" type="button" data-concentration-mode="rna">RNA</button>
+              <button class="segment" type="button" data-concentration-mode="protein">Protein</button>
             </div>
+          </div>
 
-            <div class="inline-actions">
-              <button class="secondary-button" id="saveBufferPresetButton" type="button">Preset 저장</button>
+          <div class="mode-panel is-active" data-concentration-panel="rna">
+            <div class="workbench two-column">
+              <div class="stack">
+                <div class="input-grid two">
+                  <label class="field">
+                    <span>Input</span>
+                    <div class="with-unit">
+                      <input id="rnaConcInput" type="number" inputmode="decimal" min="0" step="any" placeholder="50" />
+                      <select id="rnaConcUnit" aria-label="RNA input unit">
+                        <option value="ngUl" selected>ng/uL</option>
+                        <option value="uM">uM</option>
+                        <option value="pmol">pmol</option>
+                      </select>
+                    </div>
+                  </label>
+                  <label class="field">
+                    <span>RNA MW</span>
+                    <div class="with-unit fixed-unit">
+                      <input id="rnaMwInput" type="number" inputmode="decimal" min="0" step="any" placeholder="6800" />
+                      <span>g/mol</span>
+                    </div>
+                  </label>
+                  <label class="field">
+                    <span>Volume for pmol</span>
+                    <div class="with-unit">
+                      <input id="rnaVolumeInput" type="number" inputmode="decimal" min="0" step="any" placeholder="100" />
+                      <select id="rnaVolumeUnit" aria-label="RNA volume unit">
+                        <option value="uL" selected>uL</option>
+                        <option value="mL">mL</option>
+                        <option value="L">L</option>
+                      </select>
+                    </div>
+                  </label>
+                  <label class="field">
+                    <span>Length preset</span>
+                    <div class="with-unit fixed-unit">
+                      <input id="rnaLengthInput" type="number" inputmode="numeric" min="1" step="1" placeholder="20" />
+                      <span>nt</span>
+                    </div>
+                  </label>
+                </div>
+                <div class="actions">
+                  <button class="secondary-button" type="button" data-rna-preset="rna">RNA 340 x nt</button>
+                  <button class="secondary-button" type="button" data-rna-preset="ssdna">ssDNA 330 x nt</button>
+                  <button class="secondary-button" type="button" data-rna-preset="dsdna">dsDNA 660 x bp</button>
+                </div>
+              </div>
+              <aside class="summary-rail">
+                <output class="answer" id="rnaConversionAnswer">Enter RNA concentration and MW.</output>
+                <div class="metric-strip three">
+                  <output class="metric" id="rnaNgUlOutput"><span>ng/uL</span><strong>-</strong><small>mass conc.</small></output>
+                  <output class="metric" id="rnaUMOutput"><span>uM</span><strong>-</strong><small>pmol/uL</small></output>
+                  <output class="metric" id="rnaPmolOutput"><span>pmol</span><strong>-</strong><small>in volume</small></output>
+                </div>
+              </aside>
+            </div>
+          </div>
+
+          <div class="mode-panel" data-concentration-panel="protein" hidden>
+            <div class="workbench two-column">
+              <div class="input-grid two">
+                <label class="field">
+                  <span>Input</span>
+                  <div class="with-unit">
+                    <input id="proteinConcInput" type="number" inputmode="decimal" min="0" step="any" placeholder="1" />
+                    <select id="proteinConcUnit" aria-label="Protein input unit">
+                      <option value="mgmL" selected>mg/mL</option>
+                      <option value="uM">uM</option>
+                    </select>
+                  </div>
+                </label>
+                <label class="field">
+                  <span>Protein MW</span>
+                  <div class="with-unit fixed-unit">
+                    <input id="proteinMwInput" type="number" inputmode="decimal" min="0" step="any" placeholder="50000" />
+                    <span>g/mol</span>
+                  </div>
+                </label>
+              </div>
+              <aside class="summary-rail">
+                <output class="answer" id="proteinConversionAnswer">Enter protein concentration and MW.</output>
+                <div class="metric-strip">
+                  <output class="metric" id="proteinMgMlOutput"><span>mg/mL</span><strong>-</strong><small>mass conc.</small></output>
+                  <output class="metric" id="proteinUMOutput"><span>uM</span><strong> - </strong><small>molarity</small></output>
+                </div>
+              </aside>
             </div>
           </div>
         </section>
 
-        <section class="tool-section tool-panel" data-tool-panel="dogma" aria-labelledby="dogmaTitle" hidden>
-          <div class="section-heading">
+        <section class="tool-panel" data-tool-panel="dilution" aria-labelledby="dilutionTitle" hidden>
+          <div class="panel-head">
             <div>
-              <h2 id="dogmaTitle">Central Dogma</h2>
-              <p>DNA, RNA, protein 서열 변환과 reverse complement를 계산합니다.</p>
+              <p class="eyebrow">dilution</p>
+              <h2 id="dilutionTitle">Stock dilution and target concentration planning</h2>
             </div>
-            <div class="segmented dogma-modes" role="tablist" aria-label="Central dogma mode">
-              <button class="segment active" type="button" data-dogma-mode="transcribe">DNA to RNA</button>
+            <div class="segmented wide" aria-label="Dilution mode">
+              <button class="segment is-active" type="button" data-dilution-mode="fold">Fold dilution</button>
+              <button class="segment" type="button" data-dilution-mode="molar">C1V1 dilution</button>
+              <button class="segment" type="button" data-dilution-mode="rna">RNA target</button>
+              <button class="segment" type="button" data-dilution-mode="protein">Protein target</button>
+            </div>
+          </div>
+
+          <div class="mode-panel is-active" data-dilution-panel="fold">
+            <div class="workbench two-column">
+              <div class="input-grid two">
+                <label class="field">
+                  <span>Stock</span>
+                  <div class="with-unit fixed-unit">
+                    <input id="foldStockInput" type="number" inputmode="decimal" min="0" step="any" value="10" />
+                    <span>x</span>
+                  </div>
+                </label>
+                <label class="field">
+                  <span>Target</span>
+                  <div class="with-unit fixed-unit">
+                    <input id="foldTargetInput" type="number" inputmode="decimal" min="0" step="any" value="1" />
+                    <span>x</span>
+                  </div>
+                </label>
+                <label class="field">
+                  <span>Final volume</span>
+                  <div class="with-unit">
+                    <input id="foldFinalVolumeInput" type="number" inputmode="decimal" min="0" step="any" placeholder="1000" />
+                    <select id="foldVolumeUnit" aria-label="Fold volume unit">
+                      <option value="uL" selected>uL</option>
+                      <option value="mL">mL</option>
+                      <option value="L">L</option>
+                    </select>
+                  </div>
+                </label>
+              </div>
+              <aside class="summary-rail">
+                <output class="answer" id="foldDilutionAnswer">Enter final volume.</output>
+              </aside>
+            </div>
+          </div>
+
+          <div class="mode-panel" data-dilution-panel="molar" hidden>
+            <div class="workbench two-column">
+              <div class="input-grid two">
+                <label class="field">
+                  <span>Stock concentration</span>
+                  <div class="with-unit">
+                    <input id="molarStockInput" type="number" inputmode="decimal" min="0" step="any" placeholder="1" />
+                    <select id="molarStockUnit" aria-label="Molar stock unit">
+                      <option value="M" selected>M</option>
+                      <option value="mM">mM</option>
+                      <option value="uM">uM</option>
+                    </select>
+                  </div>
+                </label>
+                <label class="field">
+                  <span>Target concentration</span>
+                  <div class="with-unit">
+                    <input id="molarTargetInput" type="number" inputmode="decimal" min="0" step="any" placeholder="10" />
+                    <select id="molarTargetUnit" aria-label="Molar target unit">
+                      <option value="M">M</option>
+                      <option value="mM" selected>mM</option>
+                      <option value="uM">uM</option>
+                    </select>
+                  </div>
+                </label>
+                <label class="field">
+                  <span>Final volume</span>
+                  <div class="with-unit">
+                    <input id="molarFinalVolumeInput" type="number" inputmode="decimal" min="0" step="any" placeholder="100" />
+                    <select id="molarVolumeUnit" aria-label="Molar final volume unit">
+                      <option value="uL">uL</option>
+                      <option value="mL" selected>mL</option>
+                      <option value="L">L</option>
+                    </select>
+                  </div>
+                </label>
+              </div>
+              <aside class="summary-rail">
+                <output class="answer" id="molarDilutionAnswer">Enter stock, target, and final volume.</output>
+              </aside>
+            </div>
+          </div>
+
+          <div class="mode-panel" data-dilution-panel="rna" hidden>
+            <div class="workbench two-column">
+              <div class="input-grid two">
+                <label class="field">
+                  <span>RNA stock</span>
+                  <div class="with-unit">
+                    <input id="rnaStockInput" type="number" inputmode="decimal" min="0" step="any" placeholder="100" />
+                    <select id="rnaStockUnit" aria-label="RNA stock unit">
+                      <option value="ngUl" selected>ng/uL</option>
+                      <option value="uM">uM</option>
+                    </select>
+                  </div>
+                </label>
+                <label class="field">
+                  <span>Target RNA</span>
+                  <div class="with-unit">
+                    <input id="rnaTargetInput" type="number" inputmode="decimal" min="0" step="any" placeholder="10" />
+                    <select id="rnaTargetUnit" aria-label="RNA target unit">
+                      <option value="ngUl">ng/uL</option>
+                      <option value="uM" selected>uM</option>
+                      <option value="pmol">pmol</option>
+                    </select>
+                  </div>
+                </label>
+                <label class="field">
+                  <span>RNA MW</span>
+                  <div class="with-unit fixed-unit">
+                    <input id="rnaDilutionMwInput" type="number" inputmode="decimal" min="0" step="any" placeholder="6800" />
+                    <span>g/mol</span>
+                  </div>
+                </label>
+                <label class="field">
+                  <span>Final volume</span>
+                  <div class="with-unit">
+                    <input id="rnaDilutionVolumeInput" type="number" inputmode="decimal" min="0" step="any" placeholder="20" />
+                    <select id="rnaDilutionVolumeUnit" aria-label="RNA dilution volume unit">
+                      <option value="uL" selected>uL</option>
+                      <option value="mL">mL</option>
+                    </select>
+                  </div>
+                </label>
+              </div>
+              <aside class="summary-rail">
+                <output class="answer" id="rnaDilutionAnswer">Enter RNA stock, target, MW, and final volume.</output>
+              </aside>
+            </div>
+          </div>
+
+          <div class="mode-panel" data-dilution-panel="protein" hidden>
+            <div class="workbench two-column">
+              <div class="input-grid two">
+                <label class="field">
+                  <span>Protein stock</span>
+                  <div class="with-unit">
+                    <input id="proteinStockInput" type="number" inputmode="decimal" min="0" step="any" placeholder="1" />
+                    <select id="proteinStockUnit" aria-label="Protein stock unit">
+                      <option value="mgmL" selected>mg/mL</option>
+                      <option value="uM">uM</option>
+                    </select>
+                  </div>
+                </label>
+                <label class="field">
+                  <span>Target protein</span>
+                  <div class="with-unit">
+                    <input id="proteinTargetInput" type="number" inputmode="decimal" min="0" step="any" placeholder="2" />
+                    <select id="proteinTargetUnit" aria-label="Protein target unit">
+                      <option value="mgmL">mg/mL</option>
+                      <option value="uM" selected>uM</option>
+                    </select>
+                  </div>
+                </label>
+                <label class="field">
+                  <span>Protein MW</span>
+                  <div class="with-unit fixed-unit">
+                    <input id="proteinDilutionMwInput" type="number" inputmode="decimal" min="0" step="any" placeholder="50000" />
+                    <span>g/mol</span>
+                  </div>
+                </label>
+                <label class="field">
+                  <span>Final volume</span>
+                  <div class="with-unit">
+                    <input id="proteinDilutionVolumeInput" type="number" inputmode="decimal" min="0" step="any" placeholder="100" />
+                    <select id="proteinDilutionVolumeUnit" aria-label="Protein dilution volume unit">
+                      <option value="uL" selected>uL</option>
+                      <option value="mL">mL</option>
+                    </select>
+                  </div>
+                </label>
+              </div>
+              <aside class="summary-rail">
+                <output class="answer" id="proteinDilutionAnswer">Enter protein stock, target, MW, and final volume.</output>
+              </aside>
+            </div>
+          </div>
+        </section>
+
+        <section class="tool-panel" data-tool-panel="buffer" aria-labelledby="bufferTitle" hidden>
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">buffer</p>
+              <h2 id="bufferTitle">Quick buffer recipe builder</h2>
+            </div>
+            <div class="segmented" aria-label="Buffer mode">
+              <button class="segment is-active" type="button" data-buffer-mode="use">Use preset</button>
+              <button class="segment" type="button" data-buffer-mode="edit">Edit preset</button>
+            </div>
+          </div>
+
+          <div class="mode-panel is-active" data-buffer-panel="use">
+            <div class="workbench two-column">
+              <div class="stack">
+                <label class="field">
+                  <span>Preset</span>
+                  <select id="bufferPresetSelect"></select>
+                </label>
+                <div class="actions">
+                  <button class="secondary-button" id="deleteBufferPresetButton" type="button">Delete preset</button>
+                </div>
+              </div>
+              <aside class="summary-rail">
+                <div class="table-wrap">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Component</th>
+                        <th>Add</th>
+                      </tr>
+                    </thead>
+                    <tbody id="bufferTableBody">
+                      <tr><td colspan="2">No saved preset.</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <p class="note" id="bufferNote"></p>
+              </aside>
+            </div>
+          </div>
+
+          <div class="mode-panel" data-buffer-panel="edit" hidden>
+            <div class="stack">
+              <div class="input-grid four">
+                <label class="field">
+                  <span>Preset name</span>
+                  <input id="bufferPresetNameInput" type="text" placeholder="My wash buffer" />
+                </label>
+                <label class="field">
+                  <span>Total volume</span>
+                  <div class="with-unit">
+                    <input id="bufferTotalVolumeInput" type="number" inputmode="decimal" min="0" step="any" placeholder="100" />
+                    <select id="bufferTotalVolumeUnit" aria-label="Buffer volume unit">
+                      <option value="mL" selected>mL</option>
+                      <option value="uL">uL</option>
+                    </select>
+                  </div>
+                </label>
+                <label class="field">
+                  <span>Diluent</span>
+                  <input id="bufferDiluentNameInput" type="text" placeholder="ddH2O" />
+                </label>
+                <label class="field">
+                  <span>Note</span>
+                  <input id="bufferPresetNoteInput" type="text" placeholder="pH 7.4" />
+                </label>
+              </div>
+              <div class="inline-panel">
+                <div class="input-grid four">
+                  <label class="field">
+                    <span>Component</span>
+                    <input id="bufferComponentNameInput" type="text" placeholder="NaCl, Tris, 10x stock" />
+                  </label>
+                  <label class="field">
+                    <span>Type</span>
+                    <select id="bufferComponentTypeSelect">
+                      <option value="solution" selected>Stock solution</option>
+                      <option value="powder">Powder</option>
+                    </select>
+                  </label>
+                  <label class="field" data-buffer-solution-field>
+                    <span>Stock</span>
+                    <div class="with-unit">
+                      <input id="bufferStockConcInput" type="number" inputmode="decimal" min="0" step="any" placeholder="10" />
+                      <select id="bufferStockConcUnit" aria-label="Buffer stock unit">
+                        <option value="X" selected>X</option>
+                        <option value="M">M</option>
+                        <option value="mM">mM</option>
+                        <option value="uM">uM</option>
+                      </select>
+                    </div>
+                  </label>
+                  <label class="field" data-buffer-solution-field>
+                    <span>Target</span>
+                    <div class="with-unit">
+                      <input id="bufferTargetConcInput" type="number" inputmode="decimal" min="0" step="any" placeholder="1" />
+                      <select id="bufferTargetConcUnit" aria-label="Buffer target unit">
+                        <option value="X" selected>X</option>
+                        <option value="M">M</option>
+                        <option value="mM">mM</option>
+                        <option value="uM">uM</option>
+                      </select>
+                    </div>
+                  </label>
+                  <label class="field" data-buffer-powder-field hidden>
+                    <span>Powder amount</span>
+                    <div class="with-unit">
+                      <input id="bufferPowderAmountInput" type="number" inputmode="decimal" min="0" step="any" placeholder="10" />
+                      <select id="bufferPowderAmountUnit" aria-label="Powder amount unit">
+                        <option value="mg" selected>mg</option>
+                        <option value="g">g</option>
+                      </select>
+                    </div>
+                  </label>
+                </div>
+                <div class="actions">
+                  <button class="primary-button" id="addBufferComponentButton" type="button">Add component</button>
+                  <button class="secondary-button" id="saveBufferPresetButton" type="button">Save preset</button>
+                </div>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Component</th>
+                      <th>Type</th>
+                      <th>Input / Add</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody id="bufferComponentTableBody">
+                    <tr><td colspan="4">Add components to save a preset.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="tool-panel" data-tool-panel="sequence" aria-labelledby="sequenceTitle" hidden>
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">sequence</p>
+              <h2 id="sequenceTitle">Central dogma utilities</h2>
+            </div>
+            <div class="segmented wide" aria-label="Sequence mode">
+              <button class="segment is-active" type="button" data-dogma-mode="transcribe">DNA to RNA</button>
               <button class="segment" type="button" data-dogma-mode="reverseTranscribe">RNA to DNA</button>
               <button class="segment" type="button" data-dogma-mode="translate">RNA to Protein</button>
-              <button class="segment" type="button" data-dogma-mode="reverseComplement">Reverse complement</button>
+              <button class="segment" type="button" data-dogma-mode="reverseComplement">Reverse comp.</button>
             </div>
           </div>
 
-          <label class="field textarea-field">
-            <span>Input sequence</span>
-            <textarea
-              id="dogmaInput"
-              spellcheck="false"
-              placeholder="예: ATGGCCATTGTAATGGGCCGCTGAAAGGGTGCCCGATAG 또는 AUGGCCA..."
-            ></textarea>
-          </label>
-
-          <div class="result-grid four-up">
-            <output class="metric" id="dogmaInputLengthOutput">
-              <span class="metric-label">Input length</span>
-              <strong>-</strong>
-              <span class="metric-unit">nt</span>
-            </output>
-            <output class="metric" id="dogmaGcOutput">
-              <span class="metric-label">Input GC</span>
-              <strong>-</strong>
-              <span class="metric-unit">%</span>
-            </output>
-            <output class="metric" id="dogmaOutputLengthOutput">
-              <span class="metric-label">Output length</span>
-              <strong>-</strong>
-              <span class="metric-unit" id="dogmaOutputUnit">nt / aa</span>
-            </output>
-            <output class="metric" id="dogmaFrameOutput">
-              <span class="metric-label">Frame</span>
-              <strong>-</strong>
-              <span class="metric-unit">codons</span>
-            </output>
+          <div class="workbench two-column">
+            <div class="stack">
+              <label class="field">
+                <span>Input sequence</span>
+                <textarea id="dogmaInput" spellcheck="false" placeholder="ATGGCCATTGTAATGGGCCGCTGAAAGGGTGCCCGATAG"></textarea>
+              </label>
+              <div class="actions">
+                <button class="primary-button" id="copyDogmaOutputButton" type="button">Copy output</button>
+                <button class="secondary-button" id="clearDogmaButton" type="button">Clear</button>
+              </div>
+            </div>
+            <aside class="summary-rail">
+              <div class="metric-strip two">
+                <output class="metric" id="dogmaInputLengthOutput"><span>Input length</span><strong>-</strong><small>nt</small></output>
+                <output class="metric" id="dogmaGcOutput"><span>Input GC</span><strong>-</strong><small>%</small></output>
+                <output class="metric" id="dogmaOutputLengthOutput"><span>Output length</span><strong>-</strong><small id="dogmaOutputUnit">nt / aa</small></output>
+                <output class="metric" id="dogmaFrameOutput"><span>Frame</span><strong>-</strong><small>codons</small></output>
+              </div>
+              <label class="field output-field">
+                <span>Output</span>
+                <textarea id="dogmaOutput" readonly spellcheck="false"></textarea>
+              </label>
+              <p class="note" id="dogmaNote">Translation uses the standard genetic code from the first base.</p>
+            </aside>
           </div>
-
-          <label class="field textarea-field output-field">
-            <span>Output</span>
-            <textarea id="dogmaOutput" readonly spellcheck="false"></textarea>
-          </label>
-
-          <div class="inline-actions">
-            <button class="primary-button" id="copyDogmaOutputButton" type="button">결과 복사</button>
-            <button class="secondary-button" id="clearDogmaButton" type="button">지우기</button>
-          </div>
-
-          <p class="note" id="dogmaNote">
-            Translation은 standard genetic code를 사용하고 첫 염기부터 1번 reading frame으로 번역합니다.
-          </p>
         </section>
-
       </main>
     </div>
 
-    <script src="app.js?v=19" type="module"></script>
+    <script src="app.js" type="module"></script>
   </body>
 </html>
